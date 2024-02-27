@@ -18,10 +18,20 @@ DOT_SPACING = 2.34; // Center to center
 // software calibration rather than in hardware.
 DEGREES_TO_POPULATE = 178;
 
-// Tube stuff
+// Drum stuff
 BLANK_SPACE_AT_END = 2; // Blank space to leave before first col and after last col on wheel (set to 0 for 360 deg)
 V_PADDING = 1.5;
 TUBE_WALL = 2;
+
+// Window/cover stuff
+COVER_DRUM_GAP = .2; // Extra gap between end of dots and start of cover with window in it
+COVER_H_PADDING = 10; // MM to the left and right of window
+COVER_V_PADDING = 2; // MM above and below the window TODO
+COVER_WALL = .8; // TODO test this out
+
+// TODO we probably won't have a cover foot like this, it's just for testing manually
+COVER_FOOT_HEIGHT = 1; 
+COVER_FOOT_RADIUS = 2;
 
  // Set global params for smoother shapes
 $fa = 1;
@@ -51,8 +61,12 @@ module braille_drum(dot_columns) {
     perimeter_of_whole_circle = perimeter_needed_for_dots * 360 / DEGREES_TO_POPULATE;
     radius_of_whole_circle = perimeter_of_whole_circle / PI / 2;
     
+    degrees_per_dot = DEGREES_TO_POPULATE / len(dot_columns);
+    
     echo("Computed diameter", radius_of_whole_circle * 2, "mm");
     
+    cell_height = 2*DOT_SPACING + DOT_DIAM;
+    drum_height = cell_height + 2*V_PADDING;
     module braille_arc() {
         // This is a shape that can be intersected with the support drum to make it less than 360 degrees
         module arc_mask() {
@@ -72,14 +86,12 @@ module braille_drum(dot_columns) {
                 // Draw a base
                 zcyl(r=radius_of_whole_circle, l=1, center=false);
                 // Draw a side
-                // TODO vertical padding
-                tube(h=2*DOT_SPACING + DOT_DIAM + 2*V_PADDING, or=radius_of_whole_circle, wall=TUBE_WALL);
+                tube(h=drum_height, or=radius_of_whole_circle, wall=TUBE_WALL);
             };
             arc_mask();
         }
 
         // Add the dots to it
-        degrees_per_dot = DEGREES_TO_POPULATE / len(dot_columns);
         for (i = [0: len(dot_columns) - 1]) {
             up(V_PADDING)
                 zrot(i * degrees_per_dot)
@@ -98,6 +110,45 @@ module braille_drum(dot_columns) {
         zcyl(d=2.6, h=100); // For now just a screw hole, TODO make this a proper mount
     };
 
+    module cover() {
+        // Window for a single cell
+        cover_inner_radius = radius_of_whole_circle + DOT_HEIGHT + COVER_DRUM_GAP;
+        cover_arc_perimeter = 2 * DOT_SPACING + 2 * COVER_H_PADDING;
+        // Note I just used the inner radius here because it's easier, so the actual window padding will be a bit larger.
+        cover_arc_angle = cover_arc_perimeter / (2 * PI * cover_inner_radius) * 360;
+     
+        difference() {
+            zrot(-cover_arc_angle / 2) // To center on x axis
+                intersection() {
+                    union() {
+                        // Cover drum segment
+                        tube(h=drum_height + COVER_V_PADDING * 2, ir=cover_inner_radius, wall=COVER_WALL);;
+                        // Add a foot so we can print this and it'll stand up
+                        tube(or=cover_inner_radius, wall=COVER_FOOT_RADIUS, h=COVER_FOOT_HEIGHT);
+                    }
+                    pie_slice( // Limit it to only a portion of the arc
+                        h=100, // Arbitrarily large
+                        r=cover_inner_radius + 100, // 100 is arbitrary,
+                        ang=cover_arc_angle
+                    );
+                }
+        
+            // Cut out a window
+            up(V_PADDING + COVER_V_PADDING)
+                zrot(-degrees_per_dot) // To center on x-axis
+                    pie_slice(
+                            h=cell_height,
+                            r=100, // arbitrary
+                            ang=2*degrees_per_dot
+                    );
+        }
+        
+
+    }
+    
+    right(30) // So the models ungroup
+    down(COVER_V_PADDING)
+        cover();
 }
 
 // Produces a veritcal braille cell back against the XZ plane, botton against the XY plane, left on the YZ plane
