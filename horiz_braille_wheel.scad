@@ -11,17 +11,17 @@ DOT_COLUMNS = [[0,0,0],[0,0,0],[0,0,1],[1,1,1],[0,1,0],[1,0,0],[0,0,0],[1,0,1],[
 DOT_HEIGHT = 0.48;
 DOT_DIAM = 1.44;
 DOT_SPACING = 2.34; // Center to center
-BLANK_SPACE_AT_END = 2; // Blank space to leave before first col and after last col on wheel (set to 0 for 360 deg)
-V_PADDING = 1.5;
 
 // DEGREES_TO_POPULATE sepecifies how much of the circle's arc can be "addressed" by the servo.
 // I recommend adding a buffer zone so that the disc doesn't have to be perfectly aligned to the servo's movement
 // region (e.g. for a 180 degree servo a 170 degree DEGREES_TO_POPULATE lets yo fix a 10 degree difference in
 // software calibration rather than in hardware.
 DEGREES_TO_POPULATE = 178;
-// TODO buffer
 
-
+// Tube stuff
+BLANK_SPACE_AT_END = 2; // Blank space to leave before first col and after last col on wheel (set to 0 for 360 deg)
+V_PADDING = 1.5;
+TUBE_WALL = 1;
 
  // Set global params for smoother shapes
 $fa = 1;
@@ -73,7 +73,7 @@ module braille_drum(dot_columns) {
                 zcyl(r=radius_of_whole_circle, l=1, center=false);
                 // Draw a side
                 // TODO vertical padding
-                tube(h=2*DOT_SPACING + DOT_DIAM + 2*V_PADDING, or=radius_of_whole_circle, wall=1);
+                tube(h=2*DOT_SPACING + DOT_DIAM + 2*V_PADDING, or=radius_of_whole_circle, wall=TUBE_WALL);
             };
             arc_mask();
         }
@@ -127,6 +127,6 @@ module vertical_plane_3dots(three_dots) {
 // A braille dot facing forward , base on the XZ plane, centered on (x = 0, z = 0)
 module vertical_plane_braille_dot() {
     // Note I'm not using the compute power to cut off the back here.
-    yscale(DOT_HEIGHT / DOT_DIAM)
+    yscale(2*DOT_HEIGHT / DOT_DIAM)
         sphere(d=DOT_DIAM);
 }
