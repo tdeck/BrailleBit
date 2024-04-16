@@ -23,12 +23,16 @@ def combos_from_unicode(symbols):
 
 SPACE = "⠀" # Braille unicode character
 ALPHABET = "⠁⠃⠉⠙⠑⠋⠛⠓⠊⠚⠅⠇⠍⠝⠕⠏⠟⠗⠎⠞⠥⠧⠺⠭⠽⠵"
-BASIC_MODIFIERS = "⠼⠠"
+BASIC_MODIFIERS = "⠼"
+NUMERIC = "⠃⠉⠙⠑⠋⠛⠓⠊⠚"
+PERIOD = "⠲"
+MINUS_SIGN = "⠤"  # This is the nemeth minus sign, UEB expects a dot-5 before it but it's unambiguous here
 
 
 # ALL_COMBOS is expressed as 0 or 1 for each dot, dots "123456"
-ALL_COMBOS = {"{:06b}".format(i) for i in range(64)}
+#ALL_COMBOS = {"{:06b}".format(i) for i in range(64)}
 #ALL_COMBOS = combos_from_unicode(SPACE + ALPHABET + BASIC_MODIFIERS) # Should get 40
+ALL_COMBOS = combos_from_unicode(NUMERIC + SPACE + PERIOD + MINUS_SIGN)
 
 def try_something_random():
     needed_combos = ALL_COMBOS.copy()
@@ -39,8 +43,7 @@ def try_something_random():
     while needed_combos:
         opts = [x for x in needed_combos if x.startswith(last)]
         if not opts:
-            #return None # It's possible to do this without running out for the full character set
-            # fall back to just starting a new letter, so the 2 window overlap here does nothing
+            # Fall back to just starting a new letter, so the 2 window overlap here does nothing
             # NOTE: this is a hack first part is thrown away, not added to the ring
             opts = ["xxx" + c[:3] for c in needed_combos]
 
@@ -60,11 +63,17 @@ best = None
 bestLen = None
 for i in range(50000):
     r = try_something_random()
-    if r is not None:
-        if bestLen is None or len(r) < bestLen:
-            best = r
-            bestLen = len(r)
-            print(i, "Best len", bestLen)
+    if r is None:
+        continue
+    halfway = len(r) // 2
+
+    if r[halfway] != "110" or r[halfway + 1] != "110":  # The letter G
+        continue
+
+    if bestLen is None or len(r) < bestLen:
+        best = r
+        bestLen = len(r)
+        print(i, "Best len", bestLen)
 
 print("Best length:", bestLen)
 print_for_scad(best)

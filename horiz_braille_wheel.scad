@@ -2,13 +2,16 @@ include <BOSL/shapes.scad>
 use <BOSL/shapes.scad>
 
 // The next long line was generated from a Python script and represents the arrangement of 3-dot columns on the drum
-// Alpha + space + basic modifiers
-DOT_COLUMNS = [[0,0,0],[0,0,0],[0,0,1],[1,1,1],[0,1,0],[1,0,0],[0,0,0],[1,0,1],[0,1,1],[1,0,0],[1,1,0],[1,0,0],[1,0,0],[0,1,0],[1,1,0],[1,1,0],[0,0,0],[1,0,1],[0,1,0],[1,1,1],[0,0,0],[0,1,1],[1,1,0],[0,1,0],[1,0,1],[1,0,1],[0,0,1],[1,0,1],[0,0,0],[1,0,1],[1,1,0],[1,0,1],[1,0,0],[1,0,1],[1,1,1],[0,0,1],[1,1,1],[1,0,0],[1,1,1],[1,1,0]];
-// All 64 possible Braille cells
-//DOT_COLUMNS = [[0,0,0],[0,0,1],[1,0,1],[0,1,0],[0,1,0],[1,1,0],[1,1,0],[0,0,1],[0,1,1],[0,0,1],[1,1,1],[1,1,1],[1,0,0],[1,1,0],[0,1,0],[1,0,1],[1,1,0],[1,0,1],[1,0,1],[1,0,0],[0,1,1],[1,1,0],[0,1,1],[0,0,0],[0,1,0],[0,0,1],[0,0,1],[1,1,0],[1,0,0],[1,1,1],[0,1,1],[0,1,0],[1,1,1],[0,1,0],[0,1,1],[0,1,1],[1,0,1],[1,1,1],[0,0,1],[0,1,0],[1,0,0],[0,0,1],[0,0,0],[1,1,1],[0,0,0],[1,1,0],[1,1,1],[1,1,0],[0,0,0],[1,0,0],[1,0,1],[0,0,1],[1,0,0],[1,0,0],[0,1,0],[0,0,0],[0,1,1],[1,1,1],[1,0,1],[0,1,1],[1,0,0],[0,0,0],[1,0,1],[0,0,0],[0,0,0]];
+// All possible cells
+//DOT_COLUMNS = [[0,0,0],[1,0,0],[0,1,1],[0,0,1],[0,0,0],[1,1,1],[0,0,1],[1,0,1],[0,1,1],[1,1,1],[1,0,1],[1,0,0],[1,1,0],[1,1,1],[1,1,0],[0,0,0],[0,0,1],[1,1,0],[1,0,1],[1,0,1],[0,0,0],[0,1,1],[1,0,1],[1,1,0],[0,1,0],[0,1,0],[1,0,0],[1,0,1],[0,0,1],[1,1,1],[1,0,0],[0,0,0],[1,1,0],[1,1,0],[0,0,1],[1,0,0],[0,1,0],[1,0,1],[0,1,0],[0,0,1],[0,0,1],[0,1,1],[0,1,1],[1,0,0],[0,0,1],[0,1,0],[1,1,0],[0,1,1],[1,1,0],[1,0,0],[1,0,0],[1,1,1],[1,1,1],[0,1,1],[0,1,0],[0,1,1],[0,0,0],[0,0,0],[1,0,1],[1,1,1],[0,0,0],[0,1,0],[1,1,1],[0,1,0],[0,0,0]];
+// Alpha + space + period and number sign
+//DOT_COLUMNS = [[0,0,0],[0,0,0],[0,0,1],[1,1,1],[1,0,0],[0,0,0],[1,1,1],[0,0,0],[1,1,1],[0,1,0],[1,1,1],[1,1,0],[0,0,0],[0,1,1],[1,0,0],[1,0,0],[0,1,0],[1,1,0],[0,1,0],[1,0,0],[1,1,0],[1,1,0],[1,0,0],[1,0,1],[0,0,1],[1,0,1],[0,1,0],[1,0,1],[1,0,0],[1,0,1],[1,0,1],[1,1,1],[0,0,1],[1,0,1],[0,1,1],[1,1,0],[1,0,1],[1,1,0],[1,0,1],[0,0,0]];
+
+// Numeric
+DOT_COLUMNS = [[0,0,0],[0,0,0],[0,1,0],[1,0,0],[1,0,0],[1,1,0],[1,0,0],[0,1,0],[1,1,0],[1,1,0],[0,1,0],[0,1,1],[0,0,1],[0,0,1],[1,1,0],[0,0,0]];
 
 // Braille dimensions
-DOT_HEIGHT = 0.6;  // Official is .48 but that's hard to feel
+DOT_HEIGHT = .9;  // Official is .48 but that's hard to feel, so I used the max height from California sign standards
 DOT_DIAM = 1.44;
 DOT_SPACING = 2.34; // Center to center
 
@@ -23,50 +26,52 @@ BLANK_SPACE_AT_END = 2; // Blank space to leave before first col and after last 
 V_PADDING = 1.5;
 TUBE_WALL = 2;
 
-// Window/cover stuff
-COVER_DRUM_GAP = .2; // Extra gap between end of dots and start of cover with window in it
-COVER_H_PADDING = 10; // MM to the left and right of window
-COVER_V_PADDING = 2; // MM above and below the window TODO
-COVER_WALL = .8; // TODO test this out
+// Servo stuff
+SERVO_RECT_HOLE_WIDTH = 23.6;
+SERVO_RECT_HOLE_DEPTH = 13.0;
+SERVO_HOLE_TO_SCREW_HOLE_CENTER = 2.2;
+SERVO_SCREW_HOLE_WIDTH = 3.0;
+SERVO_ROTOR_OFF_CENTER = 5.4; // TODO check
+SERVO_ROTOR_FROM_CENTER_TO_FRONT = 4; // TODO!!!!
+SERVO_ROTOR_TOP_TO_SCREW_PLATE_BOTTOM = 11.9 + 2.4;
 
-// TODO we probably won't have a cover foot like this, it's just for testing manually
-COVER_FOOT_HEIGHT = 1; 
-COVER_FOOT_RADIUS = 2;
+// Window/cover stuff
+COVER_RADIUS = 35;
+COVER_WALL_THICKNESS = .6;
+COVER_WINDOW_WIDTH = DOT_SPACING * 2.7; // TODO
+COVER_WINDOW_HEIGHT = DOT_SPACING * 4.5; // TODO
+COVER_WALL_ABOVE_WINDOW = 4;
+COVER_WALL_BESIDE_WINDOW = 4; // This is not permiter length, it's cartesian
+COVER_DRUM_GAP = 0; // Extra gap between end of dots and start of cover with window in it
+COVER_BRACKET_THICKNESS = 2;
+COVER_FOOT_DEPTH = 5;
+COVER_FOOT_THICKNESS = SERVO_ROTOR_TOP_TO_SCREW_PLATE_BOTTOM - 2;
+COVER_BRACKET_LEN_PAST_SERVO_CENTER = 3;
+COVER_BRACKET_LEN_PAST_SERVO_SIDES = 5;
+COVER_SIDE_PILLAR_SIZE = 1.8;
+COVER_SIDE_PILLAR_BACK = .5;  // TODO make this not need trial and error
+
+// Utility constants
+ARBITRARY = 1000; // Arbitrary size for various hole dimensions
+SMALL_DELTA = .01;
 
  // Set global params for smoother shapes
 $fa = 1;
 $fs = .2;
 
-/*
-braille_drum([
-    [0, 1, 1],
-    [1, 1, 0],
-    [0, 0, 0],
-    [1, 1, 1,],
-    [0, 1, 0],
-     [0, 0, 0],
-    [1, 0, 1],
-    [0, 1, 0],
-     [0, 0, 0],
-    [1, 1, 1],
-    [1, 0, 1],
-     [0, 0, 0],
-)] */
+// Computed constants
+perimeter_needed_for_dots = len(DOT_COLUMNS) * DOT_SPACING;
+perimeter_of_whole_circle = perimeter_needed_for_dots * 360 / DEGREES_TO_POPULATE;
+radius_of_whole_circle = perimeter_of_whole_circle / PI / 2;
+cell_height = 2*DOT_SPACING + DOT_DIAM;
+drum_height = cell_height + 2*V_PADDING;
+cover_width = COVER_WINDOW_WIDTH + 2 * COVER_WALL_BESIDE_WINDOW;
 
-braille_drum(DOT_COLUMNS);
-
-
-module braille_drum(dot_columns) {
-    perimeter_needed_for_dots = len(dot_columns) * DOT_SPACING;
-    perimeter_of_whole_circle = perimeter_needed_for_dots * 360 / DEGREES_TO_POPULATE;
-    radius_of_whole_circle = perimeter_of_whole_circle / PI / 2;
-    
-    degrees_per_dot = DEGREES_TO_POPULATE / len(dot_columns);
+module braille_drum() {
+    degrees_per_dot = DEGREES_TO_POPULATE / len(DOT_COLUMNS);
     
     echo("Computed diameter", radius_of_whole_circle * 2, "mm");
     
-    cell_height = 2*DOT_SPACING + DOT_DIAM;
-    drum_height = cell_height + 2*V_PADDING;
     module braille_arc() {
         // This is a shape that can be intersected with the support drum to make it less than 360 degrees
         module arc_mask() {
@@ -92,11 +97,11 @@ module braille_drum(dot_columns) {
         }
 
         // Add the dots to it
-        for (i = [0: len(dot_columns) - 1]) {
+        for (i = [0: len(DOT_COLUMNS) - 1]) {
             up(V_PADDING)
                 zrot(i * degrees_per_dot)
                     forward(radius_of_whole_circle)
-                        vertical_plane_3dots(dot_columns[i]);
+                        vertical_plane_3dots(DOT_COLUMNS[i]);
         }
     }
         
@@ -109,46 +114,6 @@ module braille_drum(dot_columns) {
         }
         zcyl(d=2.6, h=100); // For now just a screw hole, TODO make this a proper mount
     };
-
-    module cover() {
-        // Window for a single cell
-        cover_inner_radius = radius_of_whole_circle + DOT_HEIGHT + COVER_DRUM_GAP;
-        cover_arc_perimeter = 2 * DOT_SPACING + 2 * COVER_H_PADDING;
-        // Note I just used the inner radius here because it's easier, so the actual window padding will be a bit larger.
-        cover_arc_angle = cover_arc_perimeter / (2 * PI * cover_inner_radius) * 360;
-     
-        difference() {
-            zrot(-cover_arc_angle / 2) // To center on x axis
-                intersection() {
-                    union() {
-                        // Cover drum segment
-                        tube(h=drum_height + COVER_V_PADDING * 2, ir=cover_inner_radius, wall=COVER_WALL);;
-                        // Add a foot so we can print this and it'll stand up
-                        tube(or=cover_inner_radius, wall=COVER_FOOT_RADIUS, h=COVER_FOOT_HEIGHT);
-                    }
-                    pie_slice( // Limit it to only a portion of the arc
-                        h=100, // Arbitrarily large
-                        r=cover_inner_radius + 100, // 100 is arbitrary,
-                        ang=cover_arc_angle
-                    );
-                }
-        
-            // Cut out a window
-            up(V_PADDING + COVER_V_PADDING)
-                zrot(-degrees_per_dot) // To center on x-axis
-                    pie_slice(
-                            h=cell_height,
-                            r=100, // arbitrary
-                            ang=2*degrees_per_dot
-                    );
-        }
-        
-
-    }
-    
-    right(30) // So the models ungroup
-    down(COVER_V_PADDING)
-        cover();
 }
 
 // Produces a veritcal braille cell back against the XZ plane, botton against the XY plane, left on the YZ plane
@@ -181,3 +146,71 @@ module vertical_plane_braille_dot() {
     yscale(2*DOT_HEIGHT / DOT_DIAM)
         sphere(d=DOT_DIAM);
 }
+
+//braille_drum(DOT_COLUMNS);
+
+//
+// Bracket
+//
+
+module servo_attachment_carveout() {    
+    cube([SERVO_RECT_HOLE_WIDTH, SERVO_RECT_HOLE_DEPTH, ARBITRARY], center=true);
+    
+    left(SERVO_RECT_HOLE_WIDTH / 2 + SERVO_HOLE_TO_SCREW_HOLE_CENTER)
+        zcyl(h=ARBITRARY, d=SERVO_SCREW_HOLE_WIDTH);
+
+    right(SERVO_RECT_HOLE_WIDTH / 2 + SERVO_HOLE_TO_SCREW_HOLE_CENTER)
+        zcyl(h=ARBITRARY, d=SERVO_SCREW_HOLE_WIDTH);
+}
+
+// Result lies flat on x-y plane with center of window at the origin
+module cover() {
+    wall_above_drum = COVER_WALL_ABOVE_WINDOW - (drum_height - COVER_WINDOW_HEIGHT) / 2;
+    cover_height = SERVO_ROTOR_TOP_TO_SCREW_PLATE_BOTTOM + drum_height + wall_above_drum + COVER_BRACKET_THICKNESS;
+    
+    back(COVER_RADIUS)
+        up(cover_height / 2)
+            intersection() {
+                    difference() {
+                        union() {
+                            // Faceplate
+                            zcyl(r=COVER_RADIUS, h=cover_height);
+                            
+                            // Small foot
+                            down(cover_height / 2 - COVER_FOOT_THICKNESS/2)
+                                forward(COVER_RADIUS - COVER_FOOT_DEPTH)
+                                    fwdcube([cover_width, COVER_FOOT_DEPTH, COVER_FOOT_THICKNESS]);
+                            
+                            // Side pillars
+                            forward(COVER_RADIUS - COVER_SIDE_PILLAR_BACK)
+                                down(cover_height / 2)
+                                    union() {
+                                        left(cover_width/2)
+                                            upcube([COVER_SIDE_PILLAR_SIZE, COVER_SIDE_PILLAR_SIZE, cover_height]);
+                                        right(cover_width/2)
+                                            upcube([COVER_SIDE_PILLAR_SIZE, COVER_SIDE_PILLAR_SIZE, cover_height]);
+                                }
+                        }
+                       zcyl(r=COVER_RADIUS-COVER_WALL_THICKNESS, h=ARBITRARY);
+                        
+                        up(cover_height/2 - COVER_WALL_ABOVE_WINDOW - COVER_WINDOW_HEIGHT)
+                            upcube([COVER_WINDOW_WIDTH, ARBITRARY, COVER_WINDOW_HEIGHT]);
+                    }
+                     fwdcube([cover_width, ARBITRARY, ARBITRARY]);
+                };
+}
+
+module cover_bracket() {
+    right(SERVO_ROTOR_OFF_CENTER) cover();
+    bracket_length = radius_of_whole_circle + COVER_BRACKET_LEN_PAST_SERVO_CENTER + COVER_DRUM_GAP;
+    bracket_width = SERVO_RECT_HOLE_WIDTH +2 * COVER_BRACKET_LEN_PAST_SERVO_SIDES;
+    echo("Cover bracket length", bracket_length);
+    difference() {
+        forward(bracket_length / 2)
+            upcube([bracket_width, bracket_length, COVER_BRACKET_THICKNESS]);
+        forward(radius_of_whole_circle + COVER_DRUM_GAP) servo_attachment_carveout();
+    }
+}
+
+//forward(radius_of_whole_circle + COVER_DRUM_GAP) braille_drum();
+cover_bracket();
