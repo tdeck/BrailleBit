@@ -9,30 +9,31 @@
 # Python3
 import random
 
-def combos_from_unicode(symbols):
-    # Something cool about Braille Unicode is you can easily extract the dot positions
-    # from it, so it makes it easy to identify characters for inclusion from a string
-    res = set()
-    for c in symbols:
-        cpoint = ord(c) 
-        assert cpoint & 0xFFFF00 == 0x2800
-        dots = (cpoint & 63) # Little endian
-        res.add("{:06b}".format(dots)[::-1]) # Reverse str to make big endian
+BRAILLE_ASCII_BINARY_ORDER = " A1B'K2L@CIF/MSP\"E3H9O6R^DJG>NTQ,*5<-U8V.%[$+X!&;:4\\0Z7(_?W]#Y)="
+braille_ascii_to_dot_string = {}
+dot_string_to_braille_ascii = {}
+for idx, char in enumerate(BRAILLE_ASCII_BINARY_ORDER):
+    dots = "{:06b}".format(idx)[::-1]
+    braille_ascii_to_dot_string[char] = dots
+    dot_string_to_braille_ascii[dots] = char
 
-    return res
 
-SPACE = "⠀" # Braille unicode character
-ALPHABET = "⠁⠃⠉⠙⠑⠋⠛⠓⠊⠚⠅⠇⠍⠝⠕⠏⠟⠗⠎⠞⠥⠧⠺⠭⠽⠵"
-BASIC_MODIFIERS = "⠼"
-NUMERIC = "⠃⠉⠙⠑⠋⠛⠓⠊⠚"
-PERIOD = "⠲"
-MINUS_SIGN = "⠤"  # This is the nemeth minus sign, UEB expects a dot-5 before it but it's unambiguous here
+def combos_from_braille_ascii(chars):
+    return {braille_ascii_to_dot_string[c] for c in chars}
+
+
+SPACE = " "
+ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+BASIC_MODIFIERS = "#"
+NUMERIC = "ABCDEFGHIJ"
+PERIOD = "."
+MINUS_SIGN = "-"  # This is the nemeth minus sign, UEB expects a dot-5 before it but it's unambiguous here
 
 
 # ALL_COMBOS is expressed as 0 or 1 for each dot, dots "123456"
 #ALL_COMBOS = {"{:06b}".format(i) for i in range(64)}
-#ALL_COMBOS = combos_from_unicode(SPACE + ALPHABET + BASIC_MODIFIERS) # Should get 40
-ALL_COMBOS = combos_from_unicode(NUMERIC + SPACE + PERIOD + MINUS_SIGN)
+#ALL_COMBOS = combos_from_braille_ascii(SPACE + ALPHABET + BASIC_MODIFIERS) # Should get 40
+ALL_COMBOS = combos_from_braille_ascii(NUMERIC + SPACE + PERIOD + MINUS_SIGN)
 
 def try_something_random():
     needed_combos = ALL_COMBOS.copy()
@@ -56,8 +57,27 @@ def try_something_random():
 
     return order
 
+
 def print_for_scad(column_strs):
-    print('[' + ','.join(['[' + ','.join(colstr) + ']' for colstr in column_strs]) + ']')
+    print("// **** OpenSCAD constants ****")
+    print('DOT_COLUMNS = [' + ','.join(['[' + ','.join(colstr) + ']' for colstr in column_strs]) + '];')
+    print()
+
+
+def print_for_arduino(column_strs):
+    cell_chars = ""
+    for i in range(len(column_strs) - 1):
+        dots = column_strs[i] + column_strs[i + 1]
+        char = dot_string_to_braille_ascii[dots]
+        if char == '"':
+            char = r'\"'
+        cell_chars += char
+
+    print("// **** Arduino constants ****")
+    print("const int DRUM_COLS = {};".format(len(column_strs)))
+    print("const char* CELL_CHARS = \"{}\";".format(cell_chars))
+    print()
+
     
 best = None
 bestLen = None
@@ -77,4 +97,5 @@ for i in range(50000):
 
 print("Best length:", bestLen)
 print_for_scad(best)
+print_for_arduino(best)
 # Could be optimized but why bother
