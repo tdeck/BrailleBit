@@ -12,35 +12,106 @@
 Servo myservo;  // create servo object to control a servo
 // twelve servo objects can be created on most boards
 
-int pos = 0;    // variable to store the servo position
+
+// TODO debug stuff
+const int LED_PIN = LED_BUILTIN;
 
 void setup() {
   myservo.attach(9);  // attaches the servo on pin 9 to the servo object
+  pinMode(LED_PIN, OUTPUT);
 }
+// Drum info from script
+const int DRUM_COLS = 45;
+const char* CELL_CHARS = ",#L ;8-#R4TB\"1.OJFEICDGHWPA.XYQ$N$M%ZS?V+K.U`";
 
-const int DEG_OFFSET = 4;
-const int DEGREES_PER_COL = 13;
-const unsigned long DELAY_MS = 1000;
+// Servo info
+const uint16_t US_90DEG = 1500; // Should not need to be changed
+const int US_OFFSET = 0;
+const int US_PER_COL = 44; // Orig 45
+// Testing
+// 45: R great, U is a column off
+// 44: U is great,
 
-// These indicate the character in position if we align to the left column
-const char* CELL_CHARS = " ?ICDFEJGH.?-?B";
-const int DRUM_COLS = 16; // strlen(CELL_CHARS) = 1
+const int US_BACKLASH = 0; // I think the right value is around 20
+
+// Other stuff
+const unsigned long DELAY_MS = 3000;
+
+// Computed values
 const int MID_POS = DRUM_COLS / 2;
-const int START_ANGLE = 90 + MID_POS * DEGREES_PER_COL + DEG_OFFSET;
+const uint16_t START_US = US_90DEG + MID_POS * US_PER_COL + US_OFFSET;
+
+uint16_t last_pos_us = 0;
+int last_dir = 1; // Either -1 or +1
 
 void setCell(char c) {
   // Find char pos w/o using whole string lib
   int p;
+  uint16_t us = START_US;
   for (p = 0; p < DRUM_COLS - 1; ++ p) {
     if (CELL_CHARS[p] == c) {
-      int angle = START_ANGLE - p * DEGREES_PER_COL;
-      myservo.write(angle);  
+      uint16_t prior_pos_us = last_pos_us;
+      last_pos_us = us;
+      
+      //int dir = us > prior_pos_us ? 1 : -1;
+      /*
+      if (dir != last_dir) { // Try to correct for backlash
+          us = us + dir * US_BACKLASH;
+      }
+      */
+
+      //us = us + dir * US_BACKLASH;
+
+      /*
+      if (us < prior_pos_us) {
+        us = us + US_BACKLASH;
+        digitalWrite(LED_PIN, HIGH);
+      } else {
+        digitalWrite(LED_PIN, LOW);
+      }*/
+
+      myservo.writeMicroseconds(MAX_PULSE_WIDTH);
+      delay(100);
+      
+      myservo.writeMicroseconds(us);  
+      //last_dir = dir;
       return;
     }
+    us -= US_PER_COL;
   }
 }
 
+void showMessage(char* text, uint16_t delay_ms) {
+  for (char* p = text; *p; ++ p) {
+    setCell(*p);
+    delay(delay_ms);
+  }
+}
+
+
+// NOTE: Here positive change in us == dots and wheel moving rightward in window
+
 void loop() {
+  // NOTE led not working
+  /*
+  digitalWrite(LED_PIN, LOW);
+  myservo.writeMicroseconds(US_90DEG);
+  delay( 2* DELAY_MS);
+
+  digitalWrite(LED_PIN, HIGH);
+  myservo.writeMicroseconds(US_90DEG + US_BACKLASH);
+  delay(DELAY_MS);
+  */
+
+  //showMessage("BOOGER ", DELAY_MS);
+
+  setCell('R');
+  delay(DELAY_MS);
+
+  /*
+  setCell('A');
+  delay(DELAY_MS);
+
   setCell('B');
   delay(DELAY_MS);
 
@@ -58,11 +129,5 @@ void loop() {
 
   setCell('G');
   delay(DELAY_MS);
-
-  /*
-  for (pos = 180; pos >= 0; pos -= DEGREES_PER_COL) { // goes from 180 degrees to 0 degrees
-    myservo.write(pos + DEG_OFFSET);              // tell servo to go to position in variable 'pos'
-    delay(DELAY_MS);                       // waits 15 ms for the servo to reach the position
-  }
   */
 }

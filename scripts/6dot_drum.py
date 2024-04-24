@@ -24,16 +24,17 @@ def combos_from_braille_ascii(chars):
 
 SPACE = " "
 ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-BASIC_MODIFIERS = "#"
+BASIC_MODIFIERS = ",#"  # Capital sign, number sign
 NUMERIC = "ABCDEFGHIJ"
-PERIOD = "."
+PERIOD = "4"
 MINUS_SIGN = "-"  # This is the nemeth minus sign, UEB expects a dot-5 before it but it's unambiguous here
+SIMPLE_PUNCTUATION = "148" + MINUS_SIGN # Comma, period, question mark
 
 
 # ALL_COMBOS is expressed as 0 or 1 for each dot, dots "123456"
 #ALL_COMBOS = {"{:06b}".format(i) for i in range(64)}
-#ALL_COMBOS = combos_from_braille_ascii(SPACE + ALPHABET + BASIC_MODIFIERS) # Should get 40
-ALL_COMBOS = combos_from_braille_ascii(NUMERIC + SPACE + PERIOD + MINUS_SIGN)
+ALL_COMBOS = combos_from_braille_ascii(SPACE + ALPHABET + BASIC_MODIFIERS + SIMPLE_PUNCTUATION) # Should get 40
+#ALL_COMBOS = combos_from_braille_ascii(NUMERIC + SPACE + PERIOD + MINUS_SIGN)
 
 def try_something_random():
     needed_combos = ALL_COMBOS.copy()
@@ -71,6 +72,8 @@ def print_for_arduino(column_strs):
         char = dot_string_to_braille_ascii[dots]
         if char == '"':
             char = r'\"'
+        elif char == '\\':
+            char = '\\\\'
         cell_chars += char
 
     print("// **** Arduino constants ****")

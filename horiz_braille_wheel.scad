@@ -4,16 +4,17 @@ use <BOSL/shapes.scad>
 // The next long line was generated from a Python script and represents the arrangement of 3-dot columns on the drum
 // All possible cells
 //DOT_COLUMNS = [[0,0,0],[1,0,0],[0,1,1],[0,0,1],[0,0,0],[1,1,1],[0,0,1],[1,0,1],[0,1,1],[1,1,1],[1,0,1],[1,0,0],[1,1,0],[1,1,1],[1,1,0],[0,0,0],[0,0,1],[1,1,0],[1,0,1],[1,0,1],[0,0,0],[0,1,1],[1,0,1],[1,1,0],[0,1,0],[0,1,0],[1,0,0],[1,0,1],[0,0,1],[1,1,1],[1,0,0],[0,0,0],[1,1,0],[1,1,0],[0,0,1],[1,0,0],[0,1,0],[1,0,1],[0,1,0],[0,0,1],[0,0,1],[0,1,1],[0,1,1],[1,0,0],[0,0,1],[0,1,0],[1,1,0],[0,1,1],[1,1,0],[1,0,0],[1,0,0],[1,1,1],[1,1,1],[0,1,1],[0,1,0],[0,1,1],[0,0,0],[0,0,0],[1,0,1],[1,1,1],[0,0,0],[0,1,0],[1,1,1],[0,1,0],[0,0,0]];
-// Alpha + space + period and number sign
-//DOT_COLUMNS = [[0,0,0],[0,0,0],[0,0,1],[1,1,1],[1,0,0],[0,0,0],[1,1,1],[0,0,0],[1,1,1],[0,1,0],[1,1,1],[1,1,0],[0,0,0],[0,1,1],[1,0,0],[1,0,0],[0,1,0],[1,1,0],[0,1,0],[1,0,0],[1,1,0],[1,1,0],[1,0,0],[1,0,1],[0,0,1],[1,0,1],[0,1,0],[1,0,1],[1,0,0],[1,0,1],[1,0,1],[1,1,1],[0,0,1],[1,0,1],[0,1,1],[1,1,0],[1,0,1],[1,1,0],[1,0,1],[0,0,0]];
+// Alpha + basic punctuation
+DOT_COLUMNS = [[0,0,0],[0,0,1],[1,1,1],[0,0,0],[0,0,0],[0,1,1],[0,0,1],[0,0,1],[1,1,1],[0,1,0],[0,1,1],[1,1,0],[0,0,0],[0,1,0],[0,0,0],[1,0,1],[0,1,0],[1,1,0],[1,0,0],[0,1,0],[1,0,0],[1,0,0],[1,1,0],[1,1,0],[0,1,0],[1,1,1],[1,0,0],[0,0,0],[1,0,1],[1,0,1],[1,1,1],[1,1,0],[1,0,1],[1,1,0],[1,0,1],[1,0,0],[1,0,1],[0,1,1],[1,0,0],[1,1,1],[0,0,1],[1,0,1],[0,0,0],[1,0,1],[0,0,1]];
+
 
 // Numeric
-DOT_COLUMNS = [[0,0,0],[0,0,0],[0,1,0],[1,0,0],[1,0,0],[1,1,0],[1,0,0],[0,1,0],[1,1,0],[1,1,0],[0,1,0],[0,1,1],[0,0,1],[0,0,1],[1,1,0],[0,0,0]];
+//DOT_COLUMNS = [[0,0,0],[0,0,0],[0,1,0],[1,0,0],[1,0,0],[1,1,0],[1,0,0],[0,1,0],[1,1,0],[1,1,0],[0,1,0],[0,1,1],[0,0,1],[0,0,1],[1,1,0],[0,0,0]];
 
 // Braille dimensions
 DOT_HEIGHT = .9;  // Official is .48 but that's hard to feel, so I used the max height from California sign standards
 DOT_DIAM = 1.44;
-DOT_SPACING = 2.34; // Center to center
+DOT_SPACING = 2.34; // Center to centerde
 
 // DEGREES_TO_POPULATE sepecifies how much of the circle's arc can be "addressed" by the servo.
 // I recommend adding a buffer zone so that the disc doesn't have to be perfectly aligned to the servo's movement
@@ -31,15 +32,14 @@ SERVO_RECT_HOLE_WIDTH = 23.6;
 SERVO_RECT_HOLE_DEPTH = 13.0;
 SERVO_HOLE_TO_SCREW_HOLE_CENTER = 2.2;
 SERVO_SCREW_HOLE_WIDTH = 3.0;
-SERVO_ROTOR_OFF_CENTER = 5.4; // TODO check
-SERVO_ROTOR_FROM_CENTER_TO_FRONT = 4; // TODO!!!!
+SERVO_ROTOR_OFF_CENTER = 5.4;
 SERVO_ROTOR_TOP_TO_SCREW_PLATE_BOTTOM = 11.9 + 2.4;
 
 // Window/cover stuff
 COVER_RADIUS = 35;
 COVER_WALL_THICKNESS = .6;
-COVER_WINDOW_WIDTH = DOT_SPACING * 2.7; // TODO
-COVER_WINDOW_HEIGHT = DOT_SPACING * 4.5; // TODO
+COVER_WINDOW_WIDTH = DOT_SPACING * 2.7;
+COVER_WINDOW_HEIGHT = DOT_SPACING * 4.5;
 COVER_WALL_ABOVE_WINDOW = 4;
 COVER_WALL_BESIDE_WINDOW = 4; // This is not permiter length, it's cartesian
 COVER_DRUM_GAP = 0; // Extra gap between end of dots and start of cover with window in it
@@ -71,6 +71,7 @@ module braille_drum() {
     degrees_per_dot = DEGREES_TO_POPULATE / len(DOT_COLUMNS);
     
     echo("Computed diameter", radius_of_whole_circle * 2, "mm");
+    echo("Degrees per dot", degrees_per_dot);
     
     module braille_arc() {
         // This is a shape that can be intersected with the support drum to make it less than 360 degrees
@@ -212,5 +213,5 @@ module cover_bracket() {
     }
 }
 
-//forward(radius_of_whole_circle + COVER_DRUM_GAP) braille_drum();
-cover_bracket();
+forward(radius_of_whole_circle + COVER_DRUM_GAP) braille_drum();
+//cover_bracket();
