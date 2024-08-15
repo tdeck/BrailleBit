@@ -20,7 +20,7 @@ DOT_SPACING = 2.34; // Center to centerde
 // I recommend adding a buffer zone so that the disc doesn't have to be perfectly aligned to the servo's movement
 // region (e.g. for a 180 degree servo a 170 degree DEGREES_TO_POPULATE lets yo fix a 10 degree difference in
 // software calibration rather than in hardware.
-DEGREES_TO_POPULATE = 178;
+DEGREES_TO_POPULATE = 170;
 
 // Drum stuff
 BLANK_SPACE_AT_END = 2; // Blank space to leave before first col and after last col on wheel (set to 0 for 360 deg)
@@ -36,10 +36,10 @@ SERVO_ROTOR_OFF_CENTER = 5.4;
 SERVO_ROTOR_TOP_TO_SCREW_PLATE_BOTTOM = 11.9 + 2.4;
 
 // Window/cover stuff
-COVER_RADIUS = 35;
+COVER_RADIUS = 15;
 COVER_WALL_THICKNESS = .6;
 COVER_WINDOW_WIDTH = DOT_SPACING * 2.7;
-COVER_WINDOW_HEIGHT = DOT_SPACING * 4.5;
+COVER_WINDOW_HEIGHT = DOT_SPACING * 5;
 COVER_WALL_ABOVE_WINDOW = 4;
 COVER_WALL_BESIDE_WINDOW = 4; // This is not permiter length, it's cartesian
 COVER_DRUM_GAP = 0; // Extra gap between end of dots and start of cover with window in it
@@ -48,8 +48,8 @@ COVER_FOOT_DEPTH = 5;
 COVER_FOOT_THICKNESS = SERVO_ROTOR_TOP_TO_SCREW_PLATE_BOTTOM - 2;
 COVER_BRACKET_LEN_PAST_SERVO_CENTER = 3;
 COVER_BRACKET_LEN_PAST_SERVO_SIDES = 5;
-COVER_SIDE_PILLAR_SIZE = 1.8;
-COVER_SIDE_PILLAR_BACK = .5;  // TODO make this not need trial and error
+COVER_SIDE_PILLAR_SIZE = 1.5;
+COVER_SIDE_PILLAR_BACK = 1.1;  // TODO make this not need trial and error
 
 // Utility constants
 ARBITRARY = 1000; // Arbitrary size for various hole dimensions
@@ -214,4 +214,4 @@ module cover_bracket() {
 }
 
 forward(radius_of_whole_circle + COVER_DRUM_GAP) braille_drum();
-//cover_bracket();
+cover_bracket();
