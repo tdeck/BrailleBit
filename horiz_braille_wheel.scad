@@ -5,7 +5,7 @@ use <BOSL/shapes.scad>
 // All possible cells
 //DOT_COLUMNS = [[0,0,0],[1,0,0],[0,1,1],[0,0,1],[0,0,0],[1,1,1],[0,0,1],[1,0,1],[0,1,1],[1,1,1],[1,0,1],[1,0,0],[1,1,0],[1,1,1],[1,1,0],[0,0,0],[0,0,1],[1,1,0],[1,0,1],[1,0,1],[0,0,0],[0,1,1],[1,0,1],[1,1,0],[0,1,0],[0,1,0],[1,0,0],[1,0,1],[0,0,1],[1,1,1],[1,0,0],[0,0,0],[1,1,0],[1,1,0],[0,0,1],[1,0,0],[0,1,0],[1,0,1],[0,1,0],[0,0,1],[0,0,1],[0,1,1],[0,1,1],[1,0,0],[0,0,1],[0,1,0],[1,1,0],[0,1,1],[1,1,0],[1,0,0],[1,0,0],[1,1,1],[1,1,1],[0,1,1],[0,1,0],[0,1,1],[0,0,0],[0,0,0],[1,0,1],[1,1,1],[0,0,0],[0,1,0],[1,1,1],[0,1,0],[0,0,0]];
 // Alpha + basic punctuation
-DOT_COLUMNS = [[0,0,0],[0,0,1],[1,1,1],[0,0,0],[0,0,0],[0,1,1],[0,0,1],[0,0,1],[1,1,1],[0,1,0],[0,1,1],[1,1,0],[0,0,0],[0,1,0],[0,0,0],[1,0,1],[0,1,0],[1,1,0],[1,0,0],[0,1,0],[1,0,0],[1,0,0],[1,1,0],[1,1,0],[0,1,0],[1,1,1],[1,0,0],[0,0,0],[1,0,1],[1,0,1],[1,1,1],[1,1,0],[1,0,1],[1,1,0],[1,0,1],[1,0,0],[1,0,1],[0,1,1],[1,0,0],[1,1,1],[0,0,1],[1,0,1],[0,0,0],[1,0,1],[0,0,1]];
+DOT_COLUMNS = [[1,1,1],[0,0,1],[1,1,1],[0,0,0],[0,0,0],[0,1,1],[0,0,1],[0,0,1],[1,1,1],[0,1,0],[0,1,1],[1,1,0],[0,0,0],[0,1,0],[0,0,0],[1,0,1],[0,1,0],[1,1,0],[1,0,0],[0,1,0],[1,0,0],[1,0,0],[1,1,0],[1,1,0],[0,1,0],[1,1,1],[1,0,0],[0,0,0],[1,0,1],[1,0,1],[1,1,1],[1,1,0],[1,0,1],[1,1,0],[1,0,1],[1,0,0],[1,0,1],[0,1,1],[1,0,0],[1,1,1],[0,0,1],[1,0,1],[0,0,0],[1,0,1],[1,1,1]];
 
 
 // Numeric
@@ -51,6 +51,15 @@ COVER_BRACKET_LEN_PAST_SERVO_SIDES = 5;
 COVER_SIDE_PILLAR_SIZE = 1.5;
 COVER_SIDE_PILLAR_BACK = 1.1;  // TODO make this not need trial and error
 
+// Floor
+DRUM_FLOOR_THICKNESS = 1;
+DRUM_HUB_RADIUS = 12;
+
+// Backlash spring stuff
+USE_BACKLASH_SPRING = true;
+BACKLASH_SPRING_HORN_LENGTH = 15;
+BACKLASH_SPRING_HORN_WIDTH = 6;
+
 // Utility constants
 ARBITRARY = 1000; // Arbitrary size for various hole dimensions
 SMALL_DELTA = .01;
@@ -75,44 +84,61 @@ module braille_drum() {
     
     module braille_arc() {
         // This is a shape that can be intersected with the support drum to make it less than 360 degrees
+        blank_space_angle = BLANK_SPACE_AT_END / perimeter_of_whole_circle * 360;
+        arc_degrees = DEGREES_TO_POPULATE + 2*blank_space_angle;
         module arc_mask() {
-             blank_space_angle = BLANK_SPACE_AT_END / perimeter_of_whole_circle * 360;
-            
             zrot(-90 - blank_space_angle) 
                 pie_slice(
                     h=100, // Arbitrarily large
                     r=radius_of_whole_circle,
-                    ang=DEGREES_TO_POPULATE + 2*blank_space_angle
+                    ang=arc_degrees
             );
         }
+        echo("Arc degrees:", arc_degrees); // TODO debug
         
-        // Create the base shape with the arc supporting the dots
-        intersection() {
-            union() {
-                // Draw a base
-                zcyl(r=radius_of_whole_circle, l=1, center=false);
-                // Draw a side
-                tube(h=drum_height, or=radius_of_whole_circle, wall=TUBE_WALL);
-            };
-            arc_mask();
-        }
+        // This rotation corrects the angle so it's symmetical about the x axis
+        zrot(blank_space_angle + (180 - arc_degrees)/2) {
+            // Create the base shape with the arc supporting the dots
+            intersection() {
+                union() {
+                    // Draw a base
+                    zcyl(r=radius_of_whole_circle, l=DRUM_FLOOR_THICKNESS, center=false);
+                    // Draw a side
+                    tube(h=drum_height, or=radius_of_whole_circle, wall=TUBE_WALL);
+                };
+                arc_mask();
+            }
 
-        // Add the dots to it
-        for (i = [0: len(DOT_COLUMNS) - 1]) {
-            up(V_PADDING)
-                zrot(i * degrees_per_dot)
-                    forward(radius_of_whole_circle)
-                        vertical_plane_3dots(DOT_COLUMNS[i]);
+            // Add the dots to it
+            for (i = [0: len(DOT_COLUMNS) - 1]) {
+                up(V_PADDING)
+                    zrot(i * degrees_per_dot + degrees_per_dot/2)
+                        forward(radius_of_whole_circle)
+                            vertical_plane_3dots(DOT_COLUMNS[i]);
+            }
         }
     }
         
     // Add a central hub
-    // TODO parameterize
+
     difference() {
         union() {
             braille_arc();
-            zcyl(r=12, h=1, center=false); // Central smaller disc
+            
+            // Central smaller disc
+            zcyl(r=DRUM_HUB_RADIUS, h=DRUM_FLOOR_THICKNESS, center=false);
+            
+            if (USE_BACKLASH_SPRING) {
+                color("blue")
+               cuboid([
+                    BACKLASH_SPRING_HORN_LENGTH + DRUM_HUB_RADIUS,
+                    BACKLASH_SPRING_HORN_WIDTH,
+                    DRUM_FLOOR_THICKNESS
+                ], align=V_UP + V_LEFT);
+            }
         }
+        
+        // TODO parameterize
         zcyl(d=2.6, h=100); // For now just a screw hole, TODO make this a proper mount
     };
 }
@@ -207,11 +233,28 @@ module cover_bracket() {
     bracket_width = SERVO_RECT_HOLE_WIDTH +2 * COVER_BRACKET_LEN_PAST_SERVO_SIDES;
     echo("Cover bracket length", bracket_length);
     difference() {
-        forward(bracket_length / 2)
-            upcube([bracket_width, bracket_length, COVER_BRACKET_THICKNESS]);
+        union() {
+            cuboid([bracket_width, bracket_length, COVER_BRACKET_THICKNESS], align=V_UP + V_FWD);
+            
+            if (USE_BACKLASH_SPRING) {
+                   forward(radius_of_whole_circle + COVER_DRUM_GAP) {
+                        // Extra bracket floor
+                        cuboid([bracket_width, DRUM_HUB_RADIUS, COVER_BRACKET_THICKNESS], align=V_UP + V_FWD);
+                       
+                       // Stick for attaching spring
+                       color("blue")
+                       cuboid([
+                            BACKLASH_SPRING_HORN_WIDTH,
+                            BACKLASH_SPRING_HORN_LENGTH + DRUM_HUB_RADIUS,
+                            COVER_BRACKET_THICKNESS
+                        ], align=V_UP + V_FWD);
+                   }
+            }
+        }
         forward(radius_of_whole_circle + COVER_DRUM_GAP) servo_attachment_carveout();
     }
+    
 }
 
 forward(radius_of_whole_circle + COVER_DRUM_GAP) braille_drum();
-cover_bracket();
+//cover_bracket();
