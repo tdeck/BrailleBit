@@ -45,14 +45,14 @@ COVER_WALL_ABOVE_WINDOW = 4;
 COVER_WALL_BESIDE_WINDOW = 4; // This is not permiter length, it's cartesian
 COVER_DRUM_GAP = 0; // Extra gap between end of dots and start of cover with window in it
 COVER_BRACKET_THICKNESS = 2;
-COVER_FOOT_DEPTH = 5;
-COVER_FOOT_THICKNESS = SERVO_ROTOR_TOP_TO_SCREW_PLATE_BOTTOM - 2;
+COVER_FOOT_DEPTH = 5; // TODO figure out what this really means; it doesn't seem to be using the full 5
+COVER_FOOT_HEIGHT = SERVO_ROTOR_TOP_TO_SCREW_PLATE_BOTTOM - 2;
 COVER_BRACKET_LEN_PAST_SERVO_CENTER = 3;
 COVER_BRACKET_LEN_PAST_SERVO_SIDES = 5;
 COVER_BRACKET_WIRE_NOTCH_DEPTH = 2;
 COVER_BRACKET_WIRE_NOTCH_WIDTH = 4;
-COVER_SIDE_PILLAR_SIZE = 1.5;
-COVER_SIDE_PILLAR_BACK = 1.1;  // TODO make this not need trial and error
+COVER_SIDE_PILLAR_SIZE = 1.8;
+COVER_SIDE_PILLAR_BACK = 1.8;  // TODO make this not need trial and error
 
 assert(COVER_BRACKET_WIRE_NOTCH_DEPTH < COVER_BRACKET_LEN_PAST_SERVO_SIDES);
 
@@ -237,19 +237,27 @@ module cover() {
                             zcyl(r=COVER_RADIUS, h=cover_height);
                             
                             // Small foot
-                            down(cover_height / 2 - COVER_FOOT_THICKNESS/2)
+                            down(cover_height / 2 - COVER_FOOT_HEIGHT/2)
                                 forward(COVER_RADIUS - COVER_FOOT_DEPTH)
-                                    fwdcube([cover_width, COVER_FOOT_DEPTH, COVER_FOOT_THICKNESS]);
+                                    fwdcube([cover_width, COVER_FOOT_DEPTH, COVER_FOOT_HEIGHT]);
                             
-                            // Side pillars
+                            // Side pillars THD
                             forward(COVER_RADIUS - COVER_SIDE_PILLAR_BACK)
+                                color("red")
                                 down(cover_height / 2)
                                     union() {
                                         left(cover_width/2)
-                                            upcube([COVER_SIDE_PILLAR_SIZE, COVER_SIDE_PILLAR_SIZE, cover_height]);
+                                            cuboid([COVER_SIDE_PILLAR_SIZE, COVER_SIDE_PILLAR_SIZE, cover_height], align=V_UP + V_FWD);
                                         right(cover_width/2)
-                                            upcube([COVER_SIDE_PILLAR_SIZE, COVER_SIDE_PILLAR_SIZE, cover_height]);
+                                            cuboid([COVER_SIDE_PILLAR_SIZE, COVER_SIDE_PILLAR_SIZE, cover_height], align=V_UP + V_FWD);
                                 }
+                                
+                            // Calibration tab
+                            if(false) {
+                                forward(COVER_RADIUS - COVER_SIDE_PILLAR_BACK)
+                                    cuboid([10, COVER_WALL_THICKNESS, 30], align=V_UP + V_FWD); // TODO
+                                
+                            }
                         }
                        zcyl(r=COVER_RADIUS-COVER_WALL_THICKNESS, h=ARBITRARY);
                         
@@ -276,11 +284,12 @@ module cover_bracket() {
                        
                        // Stick for attaching spring
                        color("blue")
-                       cuboid([
-                            BACKLASH_SPRING_HORN_WIDTH,
-                            BACKLASH_SPRING_HORN_LENGTH + DRUM_HUB_RADIUS,
-                            COVER_BRACKET_THICKNESS
-                        ], align=V_UP + V_FWD);
+                       right(SERVO_ROTOR_OFF_CENTER) 
+                           cuboid([
+                                BACKLASH_SPRING_HORN_WIDTH,
+                                BACKLASH_SPRING_HORN_LENGTH + DRUM_HUB_RADIUS,
+                                COVER_BRACKET_THICKNESS
+                            ], align=V_UP + V_FWD);
                    }
             }
         }
