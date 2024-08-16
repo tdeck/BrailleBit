@@ -5,7 +5,7 @@ use <BOSL/shapes.scad>
 // All possible cells
 //DOT_COLUMNS = [[0,0,0],[1,0,0],[0,1,1],[0,0,1],[0,0,0],[1,1,1],[0,0,1],[1,0,1],[0,1,1],[1,1,1],[1,0,1],[1,0,0],[1,1,0],[1,1,1],[1,1,0],[0,0,0],[0,0,1],[1,1,0],[1,0,1],[1,0,1],[0,0,0],[0,1,1],[1,0,1],[1,1,0],[0,1,0],[0,1,0],[1,0,0],[1,0,1],[0,0,1],[1,1,1],[1,0,0],[0,0,0],[1,1,0],[1,1,0],[0,0,1],[1,0,0],[0,1,0],[1,0,1],[0,1,0],[0,0,1],[0,0,1],[0,1,1],[0,1,1],[1,0,0],[0,0,1],[0,1,0],[1,1,0],[0,1,1],[1,1,0],[1,0,0],[1,0,0],[1,1,1],[1,1,1],[0,1,1],[0,1,0],[0,1,1],[0,0,0],[0,0,0],[1,0,1],[1,1,1],[0,0,0],[0,1,0],[1,1,1],[0,1,0],[0,0,0]];
 // Alpha + basic punctuation
-DOT_COLUMNS = [[1,1,1],[0,0,1],[1,1,1],[0,0,0],[0,0,0],[0,1,1],[0,0,1],[0,0,1],[1,1,1],[0,1,0],[0,1,1],[1,1,0],[0,0,0],[0,1,0],[0,0,0],[1,0,1],[0,1,0],[1,1,0],[1,0,0],[0,1,0],[1,0,0],[1,0,0],[1,1,0],[1,1,0],[0,1,0],[1,1,1],[1,0,0],[0,0,0],[1,0,1],[1,0,1],[1,1,1],[1,1,0],[1,0,1],[1,1,0],[1,0,1],[1,0,0],[1,0,1],[0,1,1],[1,0,0],[1,1,1],[0,0,1],[1,0,1],[0,0,0],[1,0,1],[1,1,1]];
+DOT_COLUMNS = [[1,1,1],[0,0,1],[1,1,1],[0,0,0],[0,0,0],[0,1,1],[0,0,1],[0,0,1],[1,1,1],[0,1,0],[0,1,1],[1,1,0],[0,0,0],[0,1,0],[0,0,0],[1,0,1],[0,1,0],[1,1,0],[1,0,0],[0,1,0],[1,0,0],[1,0,0],[1,1,0],[1,1,0],[0,1,0],[1,1,1],[1,0,0],[0,0,0],[1,0,1],[1,0,1],[1,1,1],[1,1,0],[1,0,1],[1,1,0],[1,0,1],[1,0,0],[1,0,1],[0,1,1],[1,0,0],[1,1,1],[0,0,1],[1,0,1],[0,0,0],[1,0,1],[1,1,1]]; // TODO revert the first and alst column once alignment is working!
 
 
 // Numeric
@@ -48,8 +48,11 @@ COVER_FOOT_DEPTH = 5;
 COVER_FOOT_THICKNESS = SERVO_ROTOR_TOP_TO_SCREW_PLATE_BOTTOM - 2;
 COVER_BRACKET_LEN_PAST_SERVO_CENTER = 3;
 COVER_BRACKET_LEN_PAST_SERVO_SIDES = 5;
+COVER_BRACKET_WIRE_NOTCH_SIZE = 3; // Both width and depth
 COVER_SIDE_PILLAR_SIZE = 1.5;
 COVER_SIDE_PILLAR_BACK = 1.1;  // TODO make this not need trial and error
+
+assert(COVER_BRACKET_WIRE_NOTCH_SIZE < COVER_BRACKET_LEN_PAST_SERVO_SIDES);
 
 // Floor
 DRUM_FLOOR_THICKNESS = 1;
@@ -186,8 +189,16 @@ module servo_attachment_carveout() {
     left(SERVO_RECT_HOLE_WIDTH / 2 + SERVO_HOLE_TO_SCREW_HOLE_CENTER)
         zcyl(h=ARBITRARY, d=SERVO_SCREW_HOLE_WIDTH);
 
-    right(SERVO_RECT_HOLE_WIDTH / 2 + SERVO_HOLE_TO_SCREW_HOLE_CENTER)
-        zcyl(h=ARBITRARY, d=SERVO_SCREW_HOLE_WIDTH);
+    // For the backlash spring the bracket fully surrounds the servo, so we need only one screw for alignment.
+    // We replace the right screw hole with a notch to allow us to thread the servo wire through when putting
+    // the bracket onto the servo.
+    if (USE_BACKLASH_SPRING) {
+        right(SERVO_RECT_HOLE_WIDTH / 2 -SMALL_DELTA)
+            rightcube([COVER_BRACKET_WIRE_NOTCH_SIZE, COVER_BRACKET_WIRE_NOTCH_SIZE, ARBITRARY]);
+    } else {
+        right(SERVO_RECT_HOLE_WIDTH / 2 + SERVO_HOLE_TO_SCREW_HOLE_CENTER)
+            zcyl(h=ARBITRARY, d=SERVO_SCREW_HOLE_WIDTH);
+    }
 }
 
 // Result lies flat on x-y plane with center of window at the origin
@@ -256,5 +267,5 @@ module cover_bracket() {
     
 }
 
-forward(radius_of_whole_circle + COVER_DRUM_GAP) braille_drum();
-//cover_bracket();
+//forward(radius_of_whole_circle + COVER_DRUM_GAP) braille_drum();
+cover_bracket();
