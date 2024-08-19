@@ -5,11 +5,11 @@ use <BOSL/shapes.scad>
 // All possible cells
 //DOT_COLUMNS = [[0,0,0],[1,0,0],[0,1,1],[0,0,1],[0,0,0],[1,1,1],[0,0,1],[1,0,1],[0,1,1],[1,1,1],[1,0,1],[1,0,0],[1,1,0],[1,1,1],[1,1,0],[0,0,0],[0,0,1],[1,1,0],[1,0,1],[1,0,1],[0,0,0],[0,1,1],[1,0,1],[1,1,0],[0,1,0],[0,1,0],[1,0,0],[1,0,1],[0,0,1],[1,1,1],[1,0,0],[0,0,0],[1,1,0],[1,1,0],[0,0,1],[1,0,0],[0,1,0],[1,0,1],[0,1,0],[0,0,1],[0,0,1],[0,1,1],[0,1,1],[1,0,0],[0,0,1],[0,1,0],[1,1,0],[0,1,1],[1,1,0],[1,0,0],[1,0,0],[1,1,1],[1,1,1],[0,1,1],[0,1,0],[0,1,1],[0,0,0],[0,0,0],[1,0,1],[1,1,1],[0,0,0],[0,1,0],[1,1,1],[0,1,0],[0,0,0]];
 // Alpha + basic punctuation
-DOT_COLUMNS = [[1,1,1],[0,0,1],[1,1,1],[0,0,0],[0,0,0],[0,1,1],[0,0,1],[0,0,1],[1,1,1],[0,1,0],[0,1,1],[1,1,0],[0,0,0],[0,1,0],[0,0,0],[1,0,1],[0,1,0],[1,1,0],[1,0,0],[0,1,0],[1,0,0],[1,0,0],[1,1,0],[1,1,0],[0,1,0],[1,1,1],[1,0,0],[0,0,0],[1,0,1],[1,0,1],[1,1,1],[1,1,0],[1,0,1],[1,1,0],[1,0,1],[1,0,0],[1,0,1],[0,1,1],[1,0,0],[1,1,1],[0,0,1],[1,0,1],[0,0,0],[1,0,1],[1,1,1]]; // TODO revert the first and alst column once alignment is working!
+//DOT_COLUMNS = [[1,1,1],[0,0,1],[1,1,1],[0,0,0],[0,0,0],[0,1,1],[0,0,1],[0,0,1],[1,1,1],[0,1,0],[0,1,1],[1,1,0],[0,0,0],[0,1,0],[0,0,0],[1,0,1],[0,1,0],[1,1,0],[1,0,0],[0,1,0],[1,0,0],[1,0,0],[1,1,0],[1,1,0],[0,1,0],[1,1,1],[1,0,0],[0,0,0],[1,0,1],[1,0,1],[1,1,1],[1,1,0],[1,0,1],[1,1,0],[1,0,1],[1,0,0],[1,0,1],[0,1,1],[1,0,0],[1,1,1],[0,0,1],[1,0,1],[0,0,0],[1,0,1],[1,1,1]]; // TODO revert the first and alst column once alignment is working!
 
 
 // Numeric
-//DOT_COLUMNS = [[0,0,0],[0,0,0],[0,1,0],[1,0,0],[1,0,0],[1,1,0],[1,0,0],[0,1,0],[1,1,0],[1,1,0],[0,1,0],[0,1,1],[0,0,1],[0,0,1],[1,1,0],[0,0,0]];
+DOT_COLUMNS = [[0,0,0],[0,0,0],[0,1,0],[1,0,0],[1,0,0],[1,1,0],[1,0,0],[0,1,0],[1,1,0],[1,1,0],[0,1,0],[0,1,1],[0,0,1],[0,0,1],[1,1,0],[0,0,0]];
 
 // Braille dimensions
 DOT_HEIGHT = .9;  // Official is .48 but that's hard to feel, so I used the max height from California sign standards
@@ -26,6 +26,11 @@ DEGREES_TO_POPULATE = 170;
 BLANK_SPACE_AT_END = 2; // Blank space to leave before first col and after last col on wheel (set to 0 for 360 deg)
 V_PADDING = 1.5;
 DRUM_WALL_THICKNESS = 2;
+
+// Backlash spring stuff
+USE_BACKLASH_SPRING = false; // True is recommended unless your servo has very little play or your drum radius is small
+BACKLASH_SPRING_HORN_LENGTH = 15;
+BACKLASH_SPRING_HORN_WIDTH = 6;
 
 // Servo stuff
 SERVO_RECT_HOLE_WIDTH = 23.6;
@@ -59,11 +64,6 @@ assert(COVER_BRACKET_WIRE_NOTCH_DEPTH < COVER_BRACKET_LEN_PAST_SERVO_SIDES);
 // Floor
 DRUM_FLOOR_THICKNESS = 1;
 DRUM_HUB_RADIUS = 12;
-
-// Backlash spring stuff
-USE_BACKLASH_SPRING = true; // True is recommended unless your servo has very little play or your drum radius is small
-BACKLASH_SPRING_HORN_LENGTH = 15;
-BACKLASH_SPRING_HORN_WIDTH = 6;
 
 // Calbiration tabs
 USE_CALIBRATION_TABS = true; // This adds a little bit of plastic but makes aligning and calibrating your servo 10 times easier
@@ -298,5 +298,5 @@ module cover_bracket() {
     
 }
 
-//forward(radius_of_whole_circle + COVER_DRUM_GAP) braille_drum();
-cover_bracket();
+forward(radius_of_whole_circle + COVER_DRUM_GAP) braille_drum();
+//cover_bracket();
