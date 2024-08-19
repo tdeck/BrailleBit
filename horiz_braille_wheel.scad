@@ -56,8 +56,7 @@ COVER_BRACKET_LEN_PAST_SERVO_CENTER = 3;
 COVER_BRACKET_LEN_PAST_SERVO_SIDES = 5;
 COVER_BRACKET_WIRE_NOTCH_DEPTH = 2;
 COVER_BRACKET_WIRE_NOTCH_WIDTH = 4;
-COVER_SIDE_PILLAR_SIZE = 1.8;
-COVER_SIDE_PILLAR_BACK = 1.8;  // TODO make this not need trial and error
+COVER_SIDE_PILLAR_SIZE = 1.8;  // TODO make this not need trial and error
 
 assert(COVER_BRACKET_WIRE_NOTCH_DEPTH < COVER_BRACKET_LEN_PAST_SERVO_SIDES);
 
@@ -139,6 +138,8 @@ module braille_drum() {
                     align=V_UP + V_LEFT
                 );
         }
+        
+        color("green")
         if (USE_CALIBRATION_TABS) {
             drum_calibration_tab();
             zrot(-CALIBRATION_TAB_ANGLE) drum_calibration_tab();
@@ -242,23 +243,29 @@ module cover() {
                                     fwdcube([cover_width, COVER_FOOT_DEPTH, COVER_FOOT_HEIGHT]);
                             
                             // Side pillars THD
-                            forward(COVER_RADIUS - COVER_SIDE_PILLAR_BACK)
-                                color("red")
+                            color("red")
+                            forward(COVER_RADIUS)
                                 down(cover_height / 2)
                                     union() {
                                         left(cover_width/2)
-                                            cuboid([COVER_SIDE_PILLAR_SIZE, COVER_SIDE_PILLAR_SIZE, cover_height], align=V_UP + V_FWD);
+                                            cuboid([COVER_SIDE_PILLAR_SIZE, COVER_SIDE_PILLAR_SIZE, cover_height], align=V_UP + V_BACK);
                                         right(cover_width/2)
-                                            cuboid([COVER_SIDE_PILLAR_SIZE, COVER_SIDE_PILLAR_SIZE, cover_height], align=V_UP + V_FWD);
+                                            cuboid([COVER_SIDE_PILLAR_SIZE, COVER_SIDE_PILLAR_SIZE, cover_height], align=V_UP + V_BACK);
                                 }
                                 
                             // Calibration tab
-                            if(false) {
-                                forward(COVER_RADIUS - COVER_SIDE_PILLAR_BACK)
-                                    cuboid([10, COVER_WALL_THICKNESS, 30], align=V_UP + V_FWD); // TODO
+                            color("green")
+                            if(true) {
+                                forward(COVER_RADIUS)
+                                    cuboid([
+                                        CALIBRATION_TAB_WIDTH,
+                                        COVER_WALL_THICKNESS,
+                                        cover_height/2 + CALIBRATION_TAB_HEIGHT
+                                        ], align=V_UP + V_BACK); // TODO
                                 
                             }
                         }
+                        
                        zcyl(r=COVER_RADIUS-COVER_WALL_THICKNESS, h=ARBITRARY);
                         
                         up(cover_height/2 - COVER_WALL_ABOVE_WINDOW - COVER_WINDOW_HEIGHT)
@@ -298,5 +305,5 @@ module cover_bracket() {
     
 }
 
-forward(radius_of_whole_circle + COVER_DRUM_GAP) braille_drum();
-//cover_bracket();
+//forward(radius_of_whole_circle + COVER_DRUM_GAP) braille_drum();
+cover_bracket();
