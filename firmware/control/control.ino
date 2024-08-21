@@ -39,7 +39,7 @@ const int16_t US_PER_COL_TIMES_4 = 175;
 // 42 is pretty good!
 
 
-const int US_BACKLASH = 0; // TODO I think the right value is around 20
+const int US_BACKLASH = 30; // TODO I think the right value is around 20
 
 // Other stuff
 const unsigned long DELAY_MS = 3000;
@@ -81,15 +81,13 @@ void setCell(char c) {
       }*/
 
       uint16_t us = START_US + (us_from_start_times_4 >> 2); // Note: This >> is an arithmetic shift
-      /* Backlash compensated
+      
+      // This compensates for the action of the backlash spring
       if (p >= MID_POS) {
-        myservo.writeMicroseconds(MAX_PULSE_WIDTH);
+        us -= US_BACKLASH;
       } else {
-        myservo.writeMicroseconds(MIN_PULSE_WIDTH);
-        us = us + US_BACKLASH;
+        us += US_BACKLASH;
       }
-      delay(400);
-      */
 
       
       myservo.writeMicroseconds(us);  
@@ -114,16 +112,19 @@ void loop() {
   // NOTE led not working
 
   //digitalWrite(LED_PIN, LOW);
-  myservo.writeMicroseconds(US_90DEG);
-  delay(1000);
+  //myservo.writeMicroseconds(US_90DEG);
+
 
   //showMessage("BOOGER ", DELAY_MS);
 
   //showMessage("#R4TB ", DELAY_MS);
-
+  
   //showMessage("GTB\"", DELAY_MS);
-  showMessage("WORKING.", DELAY_MS);
+  //showMessage("WORKING.", DELAY_MS);
 
+  setCell('V');
+
+  //setCell('G');
   /*
   setCell('A');
   delay(DELAY_MS);
