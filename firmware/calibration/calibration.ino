@@ -5,16 +5,16 @@
 #include <Servo.h>
 
 // Pin assignments
-const int SERVO_PIN = 9;
-const int LEFT_BUTTON_PIN = 15;
-const int NEXT_BUTTON_PIN = 16; // TODO rename this to continue button
-const int RIGHT_BUTTON_PIN = 17;
+const int SERVO_PIN = 26;
+const int LEFT_BUTTON_PIN = 2;
+const int NEXT_BUTTON_PIN = 1; // TODO rename this to continue button
+const int RIGHT_BUTTON_PIN = 0;
 
 // Uncomment one (or more) of these to choose how to retrieve calibration output
-//#define USE_READOUT_SERIAL
-#define USE_READOUT_MORSE // TODO debug
+#define USE_READOUT_SERIAL
+//#define USE_READOUT_MORSE
 //#define USE_READOUT_EEPROM // This will write 4 bytes of calibration data to EEPROM; be sure to set EEPROM_WRITE_ADDRESS below
-//const int EEPROM_WRITE_ADDRESS = 0; // US_CENTER will be written here, and US_PER_4DEG will be written 2 bytes later
+const int EEPROM_WRITE_ADDRESS = 0; // US_CENTER will be written here, and US_PER_4DEG will be written 2 bytes later
 
 // START OF MAIN CODE
 
@@ -23,7 +23,7 @@ const uint16_t US_90DEG = 1500;
 const int POLL_MS = 1;
 const int COARSE_ADJUST_US = 30;
 const int FINE_ADJUST_US = 10;
-const int PRIOR_40DEG_SHIFT_US = 320; // Initial amount to shift left by; doesn't need to be accurate.
+const int PRIOR_40DEG_SHIFT_US = 470; // Initial amount to shift left by; doesn't need to be accurate.
 
 enum State {
   CENTER_COARSE = 0,
@@ -43,13 +43,15 @@ enum State {
 Servo myservo;  // create servo object to control a servo
 
 void setup() {
-  myservo.attach(9);  // attaches the servo on pin 9 to the servo object
+  myservo.attach(SERVO_PIN);  // attaches the servo on pin 9 to the servo object
   pinMode(LEFT_BUTTON_PIN, INPUT);
   pinMode(NEXT_BUTTON_PIN, INPUT);
   pinMode(RIGHT_BUTTON_PIN, INPUT);
 
   #ifdef USE_READOUT_SERIAL
   Serial.begin(9600);
+  delay(2000); // Give the serial device time to get set up
+  Serial.println("Set center position (coarse)");
   #endif
 }
 
@@ -82,34 +84,55 @@ void loop() {
       case CENTER_COARSE:
         adjust_us = FINE_ADJUST_US;
         current_state = CENTER_FINE;
+
+        #ifdef USE_READOUT_SERIAL
+        Serial.println("Set center position (fine)");
+        #endif
+
         break;
       case CENTER_FINE:
         center_pos_us = current_pos_us;
         current_pos_us = center_pos_us + PRIOR_40DEG_SHIFT_US; // Move to estimated left tab position
         adjust_us = COARSE_ADJUST_US;
-        current_state = LEFT_COARSE; // TODO debug
+        current_state = LEFT_COARSE;
+
+        #ifdef USE_READOUT_SERIAL
+        Serial.println("Set left position (coarse)");
+        #endif
+
         break;
       case LEFT_COARSE:
         adjust_us = FINE_ADJUST_US;
         current_state = LEFT_FINE;
+
+        #ifdef USE_READOUT_SERIAL
+        Serial.println("Set left position (fine)");
+        #endif
+
         break;
       case LEFT_FINE:
         left_pos_us = current_pos_us;
-        uint16_t difference_40deg = left_pos_us - center_pos_us;
-        current_pos_us = center_pos_us - difference_40deg; // This should be pretty spot on for right tab
+        current_pos_us = center_pos_us - (left_pos_us - center_pos_us); // This should be pretty spot on for right tab
         adjust_us = COARSE_ADJUST_US;
         current_state = RIGHT_COARSE;
-        readout_morse__sendCode(0b101, 3, left_pos_us, center_pos_us, right_pos_us); 
+
+        #ifdef USE_READOUT_SERIAL
+        Serial.println("Set right position (coarse)");
+        #endif
+
         break;
-      case RIGHT_COARSE: // TODO why not transitioning to right fine, then to readout??
+      case RIGHT_COARSE:
         adjust_us = FINE_ADJUST_US;
         current_state = RIGHT_FINE;
-        readout_morse__sendCode(0b0010, 4, left_pos_us, center_pos_us, right_pos_us); 
+
+        #ifdef USE_READOUT_SERIAL
+        Serial.println("Set right position (fine)");
+        #endif
+
         break;
       case RIGHT_FINE:
         right_pos_us = current_pos_us;
         current_state = READOUT;
-        readout_morse__sendCode(0b010, 3, left_pos_us, center_pos_us, right_pos_us); 
         return; // Re-run the loop function in the new state
       case READOUT:
         // This is just for completeness; the button does nothing in this state
@@ -124,11 +147,16 @@ void loop() {
     delay(POLL_MS);
   } else {
     // Output the calibration results
-    uint16_t us_per_4_degrees = (right_pos_us - left_pos_us) / 20; // 80 degrees / 20 = 4 degrees.
+    uint16_t us_per_4_degrees = (left_pos_us - right_pos_us) / 20; // 80 degrees / 20 = 4 degrees.
 
     #ifdef USE_READOUT_SERIAL
-      Serial.println(center_pos, "US_CENTER = \d;");
-      Serial.println(us_per_4_degrees, "US_PER_4DEG = \d;");
+      Serial.print("US_CENTER = ");
+      Serial.print(center_pos_us);
+      Serial.println(";");
+
+      Serial.print("US_PER_4DEG = ");
+      Serial.print(us_per_4_degrees);
+      Serial.println(";");
     #endif
 
     #ifdef USE_READOUT_EEPROM
@@ -224,7 +252,7 @@ void readout_morse__sendCode(char code, int len, uint16_t left_pos, uint16_t cen
     if (element == 0) { // Dit; short pulse to the left
       myservo.writeMicroseconds(left_pos);
       delay(DIT_LENGTH);
-    } else {
+    } else { // Dah; longer pulse to the right
       myservo.writeMicroseconds(right_pos);
       delay(3 * DIT_LENGTH);
     }
