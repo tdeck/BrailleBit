@@ -7,14 +7,14 @@
 // Pin assignments
 const int SERVO_PIN = 26;
 const int LEFT_BUTTON_PIN = 2;
-const int NEXT_BUTTON_PIN = 1; // TODO rename this to continue button
+const int CONTINUE_BUTTON_PIN = 1; // TODO rename this to continue button
 const int RIGHT_BUTTON_PIN = 0;
 
 // Uncomment one (or more) of these to choose how to retrieve calibration output
 #define USE_READOUT_SERIAL
 //#define USE_READOUT_MORSE
 //#define USE_READOUT_EEPROM // This will write 4 bytes of calibration data to EEPROM; be sure to set EEPROM_WRITE_ADDRESS below
-const int EEPROM_WRITE_ADDRESS = 0; // US_CENTER will be written here, and US_PER_4DEG will be written 2 bytes later
+//const int EEPROM_WRITE_ADDRESS = 0; // US_CENTER will be written here, and US_PER_4DEG will be written 2 bytes later
 
 // START OF MAIN CODE
 
@@ -22,7 +22,7 @@ const int EEPROM_WRITE_ADDRESS = 0; // US_CENTER will be written here, and US_PE
 const uint16_t US_90DEG = 1500;
 const int POLL_MS = 1;
 const int COARSE_ADJUST_US = 30;
-const int FINE_ADJUST_US = 10;
+const int FINE_ADJUST_US = 5;
 const int PRIOR_40DEG_SHIFT_US = 470; // Initial amount to shift left by; doesn't need to be accurate.
 
 enum State {
@@ -45,7 +45,7 @@ Servo myservo;  // create servo object to control a servo
 void setup() {
   myservo.attach(SERVO_PIN);  // attaches the servo on pin 9 to the servo object
   pinMode(LEFT_BUTTON_PIN, INPUT);
-  pinMode(NEXT_BUTTON_PIN, INPUT);
+  pinMode(CONTINUE_BUTTON_PIN, INPUT);
   pinMode(RIGHT_BUTTON_PIN, INPUT);
 
   #ifdef USE_READOUT_SERIAL
@@ -58,7 +58,7 @@ void setup() {
 void loop() {
   // This is implemented as a simple state machine. The progression of states is
   // CENTER_COARSE > CENTER_FINE > LEFT_COARSE > LEFT_FINE > RIGHT_COARSE > RIGHT_FINE > READOUT
-  // where each state transition is caused by pressing the "next" button
+  // where each state transition is caused by pressing the continue button
 
   static char current_state = CENTER_COARSE;
   static uint16_t current_pos_us = US_90DEG;
@@ -68,16 +68,16 @@ void loop() {
   static uint16_t left_pos_us;
   static uint16_t right_pos_us;
 
-  static uint8_t next_button_history = 0;
+  static uint8_t continue_button_history = 0;
   static bool ready_for_press = false;
 
-  // Really basic debounce for the next button
-  next_button_history = (next_button_history << 1) | digitalRead(NEXT_BUTTON_PIN);
+  // Really basic debounce for the continue button
+  continue_button_history = (continue_button_history << 1) | digitalRead(CONTINUE_BUTTON_PIN);
   // Only accept new press if the last one was released
-  if (next_button_history == 0) ready_for_press = true;
+  if (continue_button_history == 0) ready_for_press = true;
 
-  if (ready_for_press && next_button_history == 0xFF) {
-    // Next button pressed; what to do depends on the state
+  if (ready_for_press && continue_button_history == 0xFF) {
+    // Continue button pressed; what to do depends on the state
     ready_for_press = false;
 
     switch (current_state) {
