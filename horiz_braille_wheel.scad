@@ -8,7 +8,7 @@ DOT_COLUMNS = [[0,0,0],[1,0,0],[0,1,1],[0,0,1],[0,0,0],[1,1,1],[0,0,1],[1,0,1],[
 DOT_COLUMNS = [[0,0,0],[0,0,1],[1,1,1],[0,0,0],[0,0,0],[0,1,1],[0,0,1],[0,0,1],[1,1,1],[0,1,0],[0,1,1],[1,1,0],[0,0,0],[0,1,0],[0,0,0],[1,0,1],[0,1,0],[1,1,0],[1,0,0],[0,1,0],[1,0,0],[1,0,0],[1,1,0],[1,1,0],[0,1,0],[1,1,1],[1,0,0],[0,0,0],[1,0,1],[1,0,1],[1,1,1],[1,1,0],[1,0,1],[1,1,0],[1,0,1],[1,0,0],[1,0,1],[0,1,1],[1,0,0],[1,1,1],[0,0,1],[1,0,1],[0,0,0],[1,0,1],[0,0,1]];
 
 // Numeric
-DOT_COLUMNS = [[0,0,0],[0,0,0],[0,1,0],[1,0,0],[1,0,0],[1,1,0],[1,0,0],[0,1,0],[1,1,0],[1,1,0],[0,1,0],[0,1,1],[0,0,1],[0,0,1],[1,1,0],[0,0,0]];
+DOT_COLUMNS = [[0,0,0],[0,0,0],[1,1,0],[0,1,0],[1,0,0],[1,0,0],[0,1,0],[0,1,1],[1,0,0],[1,1,0],[1,1,0],[0,0,0],[0,1,0],[1,1,0],[1,0,0],[0,0,0],[0,0,1],[0,0,1]];
 
 // All dots filled, variable size for debugging
 //DOT_COLUMNS =  [for(i=[1:5])([1,1,1])];
@@ -71,7 +71,7 @@ USE_CALIBRATION_TABS = true; // This adds a little bit of plastic but makes alig
 CALIBRATION_TAB_ANGLE = 40;
 CALIBRATION_TAB_HEIGHT = 2; // This is height above the window; height above the drum will be greater
 CALIBRATION_TAB_WIDTH = 2;
-DRUM_CALIBRATION_TAB_DEPTH = 1;
+DRUM_CALIBRATION_TAB_DEPTH = 2;
 
 // Utility constants
 ARBITRARY = 1000; // Arbitrary size for various hole dimensions
