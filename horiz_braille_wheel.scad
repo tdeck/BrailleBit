@@ -3,13 +3,16 @@ use <BOSL/shapes.scad>
 
 // The next long line was generated from a Python script and represents the arrangement of 3-dot columns on the drum
 // All possible cells
-//DOT_COLUMNS = [[0,0,0],[1,0,0],[0,1,1],[0,0,1],[0,0,0],[1,1,1],[0,0,1],[1,0,1],[0,1,1],[1,1,1],[1,0,1],[1,0,0],[1,1,0],[1,1,1],[1,1,0],[0,0,0],[0,0,1],[1,1,0],[1,0,1],[1,0,1],[0,0,0],[0,1,1],[1,0,1],[1,1,0],[0,1,0],[0,1,0],[1,0,0],[1,0,1],[0,0,1],[1,1,1],[1,0,0],[0,0,0],[1,1,0],[1,1,0],[0,0,1],[1,0,0],[0,1,0],[1,0,1],[0,1,0],[0,0,1],[0,0,1],[0,1,1],[0,1,1],[1,0,0],[0,0,1],[0,1,0],[1,1,0],[0,1,1],[1,1,0],[1,0,0],[1,0,0],[1,1,1],[1,1,1],[0,1,1],[0,1,0],[0,1,1],[0,0,0],[0,0,0],[1,0,1],[1,1,1],[0,0,0],[0,1,0],[1,1,1],[0,1,0],[0,0,0]];
+DOT_COLUMNS = [[0,0,0],[1,0,0],[0,1,1],[0,0,1],[0,0,0],[1,1,1],[0,0,1],[1,0,1],[0,1,1],[1,1,1],[1,0,1],[1,0,0],[1,1,0],[1,1,1],[1,1,0],[0,0,0],[0,0,1],[1,1,0],[1,0,1],[1,0,1],[0,0,0],[0,1,1],[1,0,1],[1,1,0],[0,1,0],[0,1,0],[1,0,0],[1,0,1],[0,0,1],[1,1,1],[1,0,0],[0,0,0],[1,1,0],[1,1,0],[0,0,1],[1,0,0],[0,1,0],[1,0,1],[0,1,0],[0,0,1],[0,0,1],[0,1,1],[0,1,1],[1,0,0],[0,0,1],[0,1,0],[1,1,0],[0,1,1],[1,1,0],[1,0,0],[1,0,0],[1,1,1],[1,1,1],[0,1,1],[0,1,0],[0,1,1],[0,0,0],[0,0,0],[1,0,1],[1,1,1],[0,0,0],[0,1,0],[1,1,1],[0,1,0],[0,0,0]];
 // Alpha + basic punctuation
 //DOT_COLUMNS = [[1,1,1],[0,0,1],[1,1,1],[0,0,0],[0,0,0],[0,1,1],[0,0,1],[0,0,1],[1,1,1],[0,1,0],[0,1,1],[1,1,0],[0,0,0],[0,1,0],[0,0,0],[1,0,1],[0,1,0],[1,1,0],[1,0,0],[0,1,0],[1,0,0],[1,0,0],[1,1,0],[1,1,0],[0,1,0],[1,1,1],[1,0,0],[0,0,0],[1,0,1],[1,0,1],[1,1,1],[1,1,0],[1,0,1],[1,1,0],[1,0,1],[1,0,0],[1,0,1],[0,1,1],[1,0,0],[1,1,1],[0,0,1],[1,0,1],[0,0,0],[1,0,1],[1,1,1]]; // TODO revert the first and alst column once alignment is working!
 
-
 // Numeric
-DOT_COLUMNS = [[0,0,0],[0,0,0],[0,1,0],[1,0,0],[1,0,0],[1,1,0],[1,0,0],[0,1,0],[1,1,0],[1,1,0],[0,1,0],[0,1,1],[0,0,1],[0,0,1],[1,1,0],[0,0,0]];
+//DOT_COLUMNS = [[0,0,0],[0,0,0],[0,1,0],[1,0,0],[1,0,0],[1,1,0],[1,0,0],[0,1,0],[1,1,0],[1,1,0],[0,1,0],[0,1,1],[0,0,1],[0,0,1],[1,1,0],[0,0,0]];
+
+// All dots filled, numeric size; for debugging
+DOT_COLUMNS = [[1,1,1],[1,1,1],[1,1,1],[1,1,1],[1,1,1],[1,1,1],[1,1,1],[1,1,1],[1,1,1],[1,1,1],[1,1,1],[1,1,1],[1,1,1],[1,1,1],[1,1,1],[1,1,1]];
+
 
 // Braille dimensions
 DOT_HEIGHT = .9;  // Official is .48 but that's hard to feel, so I used the max height from California sign standards
@@ -69,7 +72,7 @@ USE_CALIBRATION_TABS = true; // This adds a little bit of plastic but makes alig
 CALIBRATION_TAB_ANGLE = 40;
 CALIBRATION_TAB_HEIGHT = 2; // This is height above the window; height above the drum will be greater
 CALIBRATION_TAB_WIDTH = 2;
-DRUM_CALIBRATION_TAB_DEPTH = 3;
+DRUM_CALIBRATION_TAB_DEPTH = 1;
 
 // Utility constants
 ARBITRARY = 1000; // Arbitrary size for various hole dimensions
@@ -80,7 +83,7 @@ $fa = 1;
 $fs = .2;
 
 // Computed constants
-perimeter_needed_for_dots = len(DOT_COLUMNS) * DOT_SPACING;
+perimeter_needed_for_dots = (len(DOT_COLUMNS) + 1) * DOT_SPACING; // DOT_SPACING is center-to-center
 perimeter_of_whole_circle = perimeter_needed_for_dots * 360 / DEGREES_TO_POPULATE;
 radius_of_whole_circle = perimeter_of_whole_circle / PI / 2;
 cell_height = 2*DOT_SPACING + DOT_DIAM;
@@ -96,7 +99,7 @@ module braille_drum() {
     
     module braille_arc() {
         // This is a shape that can be intersected with the support drum to make it less than 360 degrees
-        blank_space_angle = BLANK_SPACE_AT_END / perimeter_of_whole_circle * 360;
+        blank_space_angle = 4; //TODO debug BLANK_SPACE_AT_END / perimeter_of_whole_circle * 360; // TODO debug
         arc_degrees = DEGREES_TO_POPULATE + 2*blank_space_angle;
         module arc_mask() {
             zrot(-90 - blank_space_angle) 
@@ -109,7 +112,8 @@ module braille_drum() {
         echo("Arc degrees:", arc_degrees); // TODO debug
         
         // This rotation corrects the angle so it's symmetical about the x axis
-        zrot(blank_space_angle + (180 - arc_degrees)/2) {
+        zrot(90 - DEGREES_TO_POPULATE/2)
+        {
             // Create the base shape with the arc supporting the dots
             intersection() {
                 union() {
@@ -122,11 +126,13 @@ module braille_drum() {
             }
 
             // Add the dots to it
-            for (i = [0: len(DOT_COLUMNS) - 1]) {
-                up(V_PADDING)
-                    zrot(i * degrees_per_dot + degrees_per_dot/2)
-                        forward(radius_of_whole_circle)
-                            vertical_plane_3dots(DOT_COLUMNS[i]);
+            // TODO zrot(blank_space_angle) { // TODO if the blank space angle makes the arc >180 degrees this is wrong
+                for (i = [0: len(DOT_COLUMNS) - 1]) {
+                    up(V_PADDING)
+                        zrot(i * degrees_per_dot + degrees_per_dot/2) // 
+                            forward(radius_of_whole_circle)
+                                vertical_plane_3dots(DOT_COLUMNS[i]);
+                }
             }
         }
         
@@ -135,7 +141,7 @@ module braille_drum() {
             right(radius_of_whole_circle)
                 cuboid(
                     [DRUM_CALIBRATION_TAB_DEPTH, CALIBRATION_TAB_WIDTH, tab_full_height],
-                    align=V_UP + V_LEFT
+                    align=V_UP + V_LEFT 
                 );
         }
         
@@ -174,7 +180,8 @@ module braille_drum() {
 // six_dots are bools corresponding to the typical braille positions, column-major order
 // i.e.. [[1, 2, 3], [4, 5, 6]]
 // Example:
-// vertical_plane_braille_cell([[true, false, true], [true, true, false]]); // N
+// vertical_plane_braille_cell([[true, false, true], [true, true, false]]); 
+// Note: This is unused
 module vertical_plane_braille_cell(six_dots) {
     for (col = [0, 1]) {
         left(DOT_SPACING / 2) right(col * DOT_SPACING) // TODO
@@ -182,12 +189,11 @@ module vertical_plane_braille_cell(six_dots) {
     }
 }
 
-// Produces a vertical column of braille dots back against the XZ plane, bottom against the XY plane, centered on Z
+// Produces a vertical column of braille dots bottom against the XY plane, centered on Z axis
 // three_dots corresponds to the column top-first, e.g. [1, 2, 3] for typical Braille dot numbers
 module vertical_plane_3dots(three_dots) {   
    for (row = [2, 1, 0]) {
        if (three_dots[row]) {
-            right(DOT_DIAM/2)
             up(DOT_DIAM/2) up((2 - row) * DOT_SPACING)
                 vertical_plane_braille_dot();
        }
@@ -242,7 +248,7 @@ module cover() {
                                 forward(COVER_RADIUS - COVER_FOOT_DEPTH)
                                     fwdcube([cover_width, COVER_FOOT_DEPTH, COVER_FOOT_HEIGHT]);
                             
-                            // Side pillars THD
+                            // Side pillars
                             color("red")
                             forward(COVER_RADIUS)
                                 down(cover_height / 2)
@@ -261,7 +267,7 @@ module cover() {
                                         CALIBRATION_TAB_WIDTH,
                                         COVER_WALL_THICKNESS,
                                         cover_height/2 + CALIBRATION_TAB_HEIGHT
-                                        ], align=V_UP + V_BACK); // TODO
+                                        ], align=V_UP); // TODO this align
                                 
                             }
                         }
@@ -305,5 +311,15 @@ module cover_bracket() {
     
 }
 
-//forward(radius_of_whole_circle + COVER_DRUM_GAP) braille_drum();
-cover_bracket();
+// These movements and rotations just line the assemblies up so their relationship shows up in the preview
+/*
+forward(radius_of_whole_circle + COVER_DRUM_GAP)
+    right(SERVO_ROTOR_OFF_CENTER)
+    up(SERVO_ROTOR_TOP_TO_SCREW_PLATE_BOTTOM)
+    zrot(90)
+    zrot(-10.625/2) */
+    {
+        rightcube([100, 1, 1]);
+        braille_drum();
+    }
+//cover_bracket();
