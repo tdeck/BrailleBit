@@ -10,8 +10,9 @@ DOT_COLUMNS = [[0,0,0],[1,0,0],[0,1,1],[0,0,1],[0,0,0],[1,1,1],[0,0,1],[1,0,1],[
 // Numeric
 //DOT_COLUMNS = [[0,0,0],[0,0,0],[0,1,0],[1,0,0],[1,0,0],[1,1,0],[1,0,0],[0,1,0],[1,1,0],[1,1,0],[0,1,0],[0,1,1],[0,0,1],[0,0,1],[1,1,0],[0,0,0]];
 
-// All dots filled, numeric size; for debugging
-DOT_COLUMNS = [[1,1,1],[1,1,1],[1,1,1],[1,1,1],[1,1,1],[1,1,1],[1,1,1],[1,1,1],[1,1,1],[1,1,1],[1,1,1],[1,1,1],[1,1,1],[1,1,1],[1,1,1],[1,1,1]];
+
+// All dots filled, variable size for debugging
+DOT_COLUMNS =  [for(i=[1:5])([1,1,1])];
 
 
 // Braille dimensions
@@ -99,10 +100,10 @@ module braille_drum() {
     
     module braille_arc() {
         // This is a shape that can be intersected with the support drum to make it less than 360 degrees
-        blank_space_angle = 4; //TODO debug BLANK_SPACE_AT_END / perimeter_of_whole_circle * 360; // TODO debug
+        blank_space_angle = BLANK_SPACE_AT_END / perimeter_of_whole_circle * 360; // TODO debug
         arc_degrees = DEGREES_TO_POPULATE + 2*blank_space_angle;
         module arc_mask() {
-            zrot(-90 - blank_space_angle) 
+            zrot(-arc_degrees/2) 
                 pie_slice(
                     h=100, // Arbitrarily large
                     r=radius_of_whole_circle,
@@ -112,27 +113,25 @@ module braille_drum() {
         echo("Arc degrees:", arc_degrees); // TODO debug
         
         // This rotation corrects the angle so it's symmetical about the x axis
-        zrot(90 - DEGREES_TO_POPULATE/2)
-        {
-            // Create the base shape with the arc supporting the dots
-            intersection() {
-                union() {
-                    // Draw a base
-                    zcyl(r=radius_of_whole_circle, l=DRUM_FLOOR_THICKNESS, center=false);
-                    // Draw a side
-                    tube(h=drum_height, or=radius_of_whole_circle, wall=DRUM_WALL_THICKNESS);
-                };
-                arc_mask();
-            }
 
-            // Add the dots to it
-            // TODO zrot(blank_space_angle) { // TODO if the blank space angle makes the arc >180 degrees this is wrong
-                for (i = [0: len(DOT_COLUMNS) - 1]) {
-                    up(V_PADDING)
-                        zrot(i * degrees_per_dot + degrees_per_dot/2) // 
-                            forward(radius_of_whole_circle)
-                                vertical_plane_3dots(DOT_COLUMNS[i]);
-                }
+        // Create the base shape with the arc supporting the dots
+        intersection() {
+            union() {
+                // Draw a base
+                zcyl(r=radius_of_whole_circle, l=DRUM_FLOOR_THICKNESS, center=false);
+                // Draw a side
+                tube(h=drum_height, or=radius_of_whole_circle, wall=DRUM_WALL_THICKNESS);
+            };
+            arc_mask();
+        }
+
+        // Add the dots to it
+        zrot(90 - DEGREES_TO_POPULATE/2) {
+            for (i = [0: len(DOT_COLUMNS) - 1]) {
+                up(V_PADDING)
+                    zrot(i * degrees_per_dot + degrees_per_dot/2) // 
+                        forward(radius_of_whole_circle)
+                            vertical_plane_3dots(DOT_COLUMNS[i]);
             }
         }
         
