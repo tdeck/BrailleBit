@@ -5,15 +5,13 @@ use <BOSL/shapes.scad>
 // All possible cells
 DOT_COLUMNS = [[0,0,0],[1,0,0],[0,1,1],[0,0,1],[0,0,0],[1,1,1],[0,0,1],[1,0,1],[0,1,1],[1,1,1],[1,0,1],[1,0,0],[1,1,0],[1,1,1],[1,1,0],[0,0,0],[0,0,1],[1,1,0],[1,0,1],[1,0,1],[0,0,0],[0,1,1],[1,0,1],[1,1,0],[0,1,0],[0,1,0],[1,0,0],[1,0,1],[0,0,1],[1,1,1],[1,0,0],[0,0,0],[1,1,0],[1,1,0],[0,0,1],[1,0,0],[0,1,0],[1,0,1],[0,1,0],[0,0,1],[0,0,1],[0,1,1],[0,1,1],[1,0,0],[0,0,1],[0,1,0],[1,1,0],[0,1,1],[1,1,0],[1,0,0],[1,0,0],[1,1,1],[1,1,1],[0,1,1],[0,1,0],[0,1,1],[0,0,0],[0,0,0],[1,0,1],[1,1,1],[0,0,0],[0,1,0],[1,1,1],[0,1,0],[0,0,0]];
 // Alpha + basic punctuation
-//DOT_COLUMNS = [[1,1,1],[0,0,1],[1,1,1],[0,0,0],[0,0,0],[0,1,1],[0,0,1],[0,0,1],[1,1,1],[0,1,0],[0,1,1],[1,1,0],[0,0,0],[0,1,0],[0,0,0],[1,0,1],[0,1,0],[1,1,0],[1,0,0],[0,1,0],[1,0,0],[1,0,0],[1,1,0],[1,1,0],[0,1,0],[1,1,1],[1,0,0],[0,0,0],[1,0,1],[1,0,1],[1,1,1],[1,1,0],[1,0,1],[1,1,0],[1,0,1],[1,0,0],[1,0,1],[0,1,1],[1,0,0],[1,1,1],[0,0,1],[1,0,1],[0,0,0],[1,0,1],[1,1,1]]; // TODO revert the first and alst column once alignment is working!
+DOT_COLUMNS = [[0,0,0],[0,0,1],[1,1,1],[0,0,0],[0,0,0],[0,1,1],[0,0,1],[0,0,1],[1,1,1],[0,1,0],[0,1,1],[1,1,0],[0,0,0],[0,1,0],[0,0,0],[1,0,1],[0,1,0],[1,1,0],[1,0,0],[0,1,0],[1,0,0],[1,0,0],[1,1,0],[1,1,0],[0,1,0],[1,1,1],[1,0,0],[0,0,0],[1,0,1],[1,0,1],[1,1,1],[1,1,0],[1,0,1],[1,1,0],[1,0,1],[1,0,0],[1,0,1],[0,1,1],[1,0,0],[1,1,1],[0,0,1],[1,0,1],[0,0,0],[1,0,1],[0,0,1]];
 
 // Numeric
-//DOT_COLUMNS = [[0,0,0],[0,0,0],[0,1,0],[1,0,0],[1,0,0],[1,1,0],[1,0,0],[0,1,0],[1,1,0],[1,1,0],[0,1,0],[0,1,1],[0,0,1],[0,0,1],[1,1,0],[0,0,0]];
-
+DOT_COLUMNS = [[0,0,0],[0,0,0],[0,1,0],[1,0,0],[1,0,0],[1,1,0],[1,0,0],[0,1,0],[1,1,0],[1,1,0],[0,1,0],[0,1,1],[0,0,1],[0,0,1],[1,1,0],[0,0,0]];
 
 // All dots filled, variable size for debugging
-DOT_COLUMNS =  [for(i=[1:5])([1,1,1])];
-
+//DOT_COLUMNS =  [for(i=[1:5])([1,1,1])];
 
 // Braille dimensions
 DOT_HEIGHT = .9;  // Official is .48 but that's hard to feel, so I used the max height from California sign standards
@@ -91,6 +89,8 @@ cell_height = 2*DOT_SPACING + DOT_DIAM;
 drum_height = cell_height + 2*V_PADDING;
 cover_width = COVER_WINDOW_WIDTH + 2 * COVER_WALL_BESIDE_WINDOW;
 wall_above_drum = COVER_WALL_ABOVE_WINDOW - (drum_height - COVER_WINDOW_HEIGHT) / 2;
+
+echo("len(DOT_COLUMNS)", len(DOT_COLUMNS));
 
 module braille_drum() {
     degrees_per_dot = DEGREES_TO_POPULATE / len(DOT_COLUMNS);
@@ -311,14 +311,9 @@ module cover_bracket() {
 }
 
 // These movements and rotations just line the assemblies up so their relationship shows up in the preview
-/*
 forward(radius_of_whole_circle + COVER_DRUM_GAP)
     right(SERVO_ROTOR_OFF_CENTER)
     up(SERVO_ROTOR_TOP_TO_SCREW_PLATE_BOTTOM)
     zrot(90)
-    zrot(-10.625/2) */
-    {
-        rightcube([100, 1, 1]);
         braille_drum();
-    }
 //cover_bracket();
