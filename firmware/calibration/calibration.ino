@@ -7,7 +7,7 @@
 // Pin assignments
 const int SERVO_PIN = 26;
 const int LEFT_BUTTON_PIN = 2;
-const int CONTINUE_BUTTON_PIN = 1; // TODO rename this to continue button
+const int CONTINUE_BUTTON_PIN = 1;
 const int RIGHT_BUTTON_PIN = 0;
 
 // Uncomment one (or more) of these to choose how to retrieve calibration output
