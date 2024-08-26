@@ -1,14 +1,15 @@
-include <BOSL/shapes.scad>
+include <BOSL/constants.scad>
+use <BOSL/transforms.scad>
 use <BOSL/shapes.scad>
 
 // The next long line was generated from a Python script and represents the arrangement of 3-dot columns on the rotor wall
 // All possible cells
 //DOT_COLUMNS = [[0,0,0],[1,0,0],[0,1,1],[0,0,1],[0,0,0],[1,1,1],[0,0,1],[1,0,1],[0,1,1],[1,1,1],[1,0,1],[1,0,0],[1,1,0],[1,1,1],[1,1,0],[0,0,0],[0,0,1],[1,1,0],[1,0,1],[1,0,1],[0,0,0],[0,1,1],[1,0,1],[1,1,0],[0,1,0],[0,1,0],[1,0,0],[1,0,1],[0,0,1],[1,1,1],[1,0,0],[0,0,0],[1,1,0],[1,1,0],[0,0,1],[1,0,0],[0,1,0],[1,0,1],[0,1,0],[0,0,1],[0,0,1],[0,1,1],[0,1,1],[1,0,0],[0,0,1],[0,1,0],[1,1,0],[0,1,1],[1,1,0],[1,0,0],[1,0,0],[1,1,1],[1,1,1],[0,1,1],[0,1,0],[0,1,1],[0,0,0],[0,0,0],[1,0,1],[1,1,1],[0,0,0],[0,1,0],[1,1,1],[0,1,0],[0,0,0]];
 // Alpha + basic punctuation
-//DOT_COLUMNS = [[0,0,0],[0,0,1],[1,1,1],[0,0,0],[0,0,0],[0,1,1],[0,0,1],[0,0,1],[1,1,1],[0,1,0],[0,1,1],[1,1,0],[0,0,0],[0,1,0],[0,0,0],[1,0,1],[0,1,0],[1,1,0],[1,0,0],[0,1,0],[1,0,0],[1,0,0],[1,1,0],[1,1,0],[0,1,0],[1,1,1],[1,0,0],[0,0,0],[1,0,1],[1,0,1],[1,1,1],[1,1,0],[1,0,1],[1,1,0],[1,0,1],[1,0,0],[1,0,1],[0,1,1],[1,0,0],[1,1,1],[0,0,1],[1,0,1],[0,0,0],[1,0,1],[0,0,1]];
+DOT_COLUMNS = [[0,0,0],[0,0,1],[1,1,1],[0,0,0],[0,0,0],[0,1,1],[0,0,1],[0,0,1],[1,1,1],[0,1,0],[0,1,1],[1,1,0],[0,0,0],[0,1,0],[0,0,0],[1,0,1],[0,1,0],[1,1,0],[1,0,0],[0,1,0],[1,0,0],[1,0,0],[1,1,0],[1,1,0],[0,1,0],[1,1,1],[1,0,0],[0,0,0],[1,0,1],[1,0,1],[1,1,1],[1,1,0],[1,0,1],[1,1,0],[1,0,1],[1,0,0],[1,0,1],[0,1,1],[1,0,0],[1,1,1],[0,0,1],[1,0,1],[0,0,0],[1,0,1],[0,0,1]];
 
 // Numeric
-DOT_COLUMNS = [[0,0,0],[0,0,0],[1,1,0],[0,1,0],[1,0,0],[1,0,0],[0,1,0],[0,1,1],[1,0,0],[1,1,0],[1,1,0],[0,0,0],[0,1,0],[1,1,0],[1,0,0],[0,0,0],[0,0,1],[0,0,1]];
+//DOT_COLUMNS = [[0,0,0],[0,0,0],[1,1,0],[0,1,0],[1,0,0],[1,0,0],[0,1,0],[0,1,1],[1,0,0],[1,1,0],[1,1,0],[0,0,0],[0,1,0],[1,1,0],[1,0,0],[0,0,0],[0,0,1],[0,0,1]];
 
 // All dots filled, variable size for debugging
 //DOT_COLUMNS =  [for(i=[1:5])([1,1,1])];
@@ -30,7 +31,7 @@ V_PADDING = 1.5;
 ROTOR_WALL_THICKNESS = 2;
 
 // Backlash spring stuff
-USE_BACKLASH_SPRING = false; // True is recommended unless your servo has very little play or your rotor radius is small
+USE_BACKLASH_SPRING = true; // True is recommended unless your servo has very little play or your rotor radius is small
 BACKLASH_SPRING_HORN_LENGTH = 15;
 BACKLASH_SPRING_HORN_WIDTH = 6;
 
@@ -42,6 +43,13 @@ SERVO_MOUNTING_SCREW_HOLE_DIAM = 3.0;
 SERVO_ROTOR_OFF_CENTER = 5.4;
 SERVO_ROTOR_TOP_TO_SCREW_PLATE_BOTTOM = 11.9 + 2.4;
 SERVO_HUB_SCREW_HOLE_DIAM = 2.6; // Should be a little on the small side so screw holds the rotor snugly
+SERVO_SPLINE_TEETH = 20;
+SERVO_SPLINE_TOOTH_DEPTH = .3; // TODO check
+SERVO_SPLINE_OUTER_DIAMETER = 4.8; // TODO check
+SERVO_SPLINE_CLEARANCE = .2; // Adjust this if your print doesn't fit
+SERVO_SPLINE_ATTACHMENT_HEIGHT = 3; // TODO adjust
+
+USE_SERVO_SPLINE = USE_BACKLASH_SPRING; // Recommended if you use the backlash spring; makes centering a little more difficult
 
 // Window/cover stuff
 COVER_RADIUS = 15;
@@ -308,10 +316,43 @@ module cover_bracket() {
     
 }
 
+// TODO move up
+module servo_spline_carveout() {
+    // TODO alignment
+    spline_circumference = PI * SERVO_SPLINE_OUTER_DIAMETER;
+    tooth_pitch_degrees = 360 / SERVO_SPLINE_TEETH; // This is for the tip + root
+    orig_tooth_tip_mm = spline_circumference / SERVO_SPLINE_TEETH / 2;
+    
+    // Hole sized to fit around the spline if the teeth were missing (i.e. filed off)
+    zcyl(
+        d=SERVO_SPLINE_OUTER_DIAMETER - 2 * SERVO_SPLINE_TOOTH_DEPTH + 2 * SERVO_SPLINE_CLEARANCE,
+        h=SERVO_SPLINE_ATTACHMENT_HEIGHT
+    );
+    
+    // Slots to accommodate the teeth
+    for (i = [0: SERVO_SPLINE_TEETH - 1]) {
+        zrot(i * tooth_pitch_degrees)
+        cuboid(
+            [
+                SERVO_SPLINE_OUTER_DIAMETER + 2 * SERVO_SPLINE_CLEARANCE,
+                orig_tooth_tip_mm + 2 * SERVO_SPLINE_CLEARANCE,
+                SERVO_SPLINE_ATTACHMENT_HEIGHT
+            ]
+        );
+    }
+}
+
+/*
 // These movements and rotations just line the assemblies up so their relationship shows up in the preview
 forward(radius_of_whole_circle + COVER_ROTOR_GAP)
     right(SERVO_ROTOR_OFF_CENTER)
     up(SERVO_ROTOR_TOP_TO_SCREW_PLATE_BOTTOM)
     zrot(90)
         braille_rotor();
-//cover_bracket();
+cover_bracket();
+*/
+
+difference() {
+upcube(10);
+servo_spline_carveout();
+}
