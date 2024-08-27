@@ -4,14 +4,14 @@ include <common.scad>
 // It prints a block with cutouts for the spline of different sizes; each cutout has a number of bumps next to it
 // equal to the number of tenths
 
-MIN_TENTHS = 2;
+MIN_TENTHS = 1;
 MAX_TENTHS = 5;
 
 MIN_SPACE_BETWEEN_TESTS = 2 * DOT_SPACING;
 
 num_tests = MAX_TENTHS - MIN_TENTHS + 1;
 // This is a little wasteful of plastic to have even spacing but it's much easier to write
-space_for_dots = DOT_SPACING * (MAX_TENTHS  - 1);
+space_for_dots = DOT_SPACING * (MAX_TENTHS  - 1) + DOT_DIAM;
 test_spacing = max(
     // If we're going up to a large number of dots, we may need to space the tests out more
     space_for_dots + MIN_SPACE_BETWEEN_TESTS,
@@ -47,7 +47,7 @@ forward(body_depth/2)
 for (i = [0: num_tests - 1]) {
     right(i * test_spacing + DOT_DIAM) // Initial offset
     right((MAX_TENTHS - i) * DOT_SPACING/2)
-    for (j = [0: i + 1]) {
+    for (j = [MIN_TENTHS: MIN_TENTHS + i]) {
         right(DOT_SPACING * j) sphere(d=DOT_DIAM);
     }
 }
