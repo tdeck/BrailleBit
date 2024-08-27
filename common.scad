@@ -293,7 +293,8 @@ module servo_attachment_carveout() {
 
 // Result lies flat on x-y plane with center of window at the origin
 module cover() {
-    cover_height = SERVO_ROTOR_TOP_TO_SCREW_PLATE_BOTTOM + rotor_height + cover_wall_above_rotor + COVER_BRACKET_THICKNESS;
+    cover_height = SERVO_ROTOR_TOP_TO_SCREW_PLATE_BOTTOM + rotor_height + cover_wall_above_rotor + COVER_BRACKET_THICKNESS
+        - (USE_SERVO_SPLINE ? SERVO_SPLINE_ATTACHMENT_HEIGHT: 0);
     
     back(COVER_RADIUS)
         up(cover_height / 2)
@@ -321,7 +322,7 @@ module cover() {
                                 
                             // Calibration tab
                             color("green")
-                            if(true) {
+                            if(USE_CALIBRATION_TAB) {
                                 forward(COVER_RADIUS)
                                     cuboid([
                                         CALIBRATION_TAB_WIDTH,
@@ -333,7 +334,9 @@ module cover() {
                         }
                         
                        zcyl(r=COVER_RADIUS-COVER_WALL_THICKNESS, h=ARBITRARY);
-                        
+                      
+                      // Window cutout
+                      // TODO review the vertical positinoing here; it's done in a confusing way  
                         up(cover_height/2 - COVER_WALL_ABOVE_WINDOW - COVER_WINDOW_HEIGHT)
                             upcube([COVER_WINDOW_WIDTH, ARBITRARY, COVER_WINDOW_HEIGHT]);
                     }

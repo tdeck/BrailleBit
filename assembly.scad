@@ -4,6 +4,7 @@ include <common.scad>
 forward(radius_of_whole_circle + COVER_ROTOR_GAP)
     right(SERVO_ROTOR_OFF_CENTER)
     up(SERVO_ROTOR_TOP_TO_SCREW_PLATE_BOTTOM)
+    down(USE_SERVO_SPLINE ? SERVO_SPLINE_ATTACHMENT_HEIGHT :  0)
     zrot(90)
         braille_rotor();
 cover_bracket();
