@@ -1,13 +1,18 @@
 #include "ServoBrailleCell.h"
 
-const float DEGREES_PER_DOT = 9.44;
-const char* CELL_CHARS = " ^HICE4SDGB\"JFA,-";
+// Numeric
+//const float DEGREES_PER_DOT = 9.44;
+//const char* CELL_CHARS = " ^HICE4SDGB\"JFA,-";
+
+// Alphanumeric
+const float DEGREES_PER_DOT = 3.78;
+const char* CELL_CHARS = ",#L ;8-#R4TB\"1.OJFEICDGHWPA.XYQ$N$M%ZS?V+K.U`";
 
 const int SERVO_PIN = 26;
 
 // These come from servo calibration
-const uint16_t US_PER_4DEG = 46;
-const uint16_t US_CENTER = 1500;
+const uint16_t US_PER_4DEG = 49;
+const uint16_t US_CENTER = 1475;
 
 // Derived constants; do not change
 // Note: Here this is calculated at compile time.
@@ -38,9 +43,9 @@ void loop() {
 
   if (ready_for_press && continue_button_history == 0xFF) {
     ready_for_press = 0;
-    int digit = random(1, 10);
-    Serial.println(digit);
-    cell.setChar('A' + digit - 1);
+    char c = 'A' + random(0, 26);
+    Serial.println(c);
+    cell.setChar(c);
   }
 
   delay(50);
