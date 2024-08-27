@@ -6,10 +6,10 @@ use <BOSL/shapes.scad>
 // All possible cells
 //DOT_COLUMNS = [[0,0,0],[1,0,0],[0,1,1],[0,0,1],[0,0,0],[1,1,1],[0,0,1],[1,0,1],[0,1,1],[1,1,1],[1,0,1],[1,0,0],[1,1,0],[1,1,1],[1,1,0],[0,0,0],[0,0,1],[1,1,0],[1,0,1],[1,0,1],[0,0,0],[0,1,1],[1,0,1],[1,1,0],[0,1,0],[0,1,0],[1,0,0],[1,0,1],[0,0,1],[1,1,1],[1,0,0],[0,0,0],[1,1,0],[1,1,0],[0,0,1],[1,0,0],[0,1,0],[1,0,1],[0,1,0],[0,0,1],[0,0,1],[0,1,1],[0,1,1],[1,0,0],[0,0,1],[0,1,0],[1,1,0],[0,1,1],[1,1,0],[1,0,0],[1,0,0],[1,1,1],[1,1,1],[0,1,1],[0,1,0],[0,1,1],[0,0,0],[0,0,0],[1,0,1],[1,1,1],[0,0,0],[0,1,0],[1,1,1],[0,1,0],[0,0,0]];
 // Alpha + basic punctuation
-DOT_COLUMNS = [[0,0,0],[0,0,1],[1,1,1],[0,0,0],[0,0,0],[0,1,1],[0,0,1],[0,0,1],[1,1,1],[0,1,0],[0,1,1],[1,1,0],[0,0,0],[0,1,0],[0,0,0],[1,0,1],[0,1,0],[1,1,0],[1,0,0],[0,1,0],[1,0,0],[1,0,0],[1,1,0],[1,1,0],[0,1,0],[1,1,1],[1,0,0],[0,0,0],[1,0,1],[1,0,1],[1,1,1],[1,1,0],[1,0,1],[1,1,0],[1,0,1],[1,0,0],[1,0,1],[0,1,1],[1,0,0],[1,1,1],[0,0,1],[1,0,1],[0,0,0],[1,0,1],[0,0,1]];
+//DOT_COLUMNS = [[0,0,0],[0,0,1],[1,1,1],[0,0,0],[0,0,0],[0,1,1],[0,0,1],[0,0,1],[1,1,1],[0,1,0],[0,1,1],[1,1,0],[0,0,0],[0,1,0],[0,0,0],[1,0,1],[0,1,0],[1,1,0],[1,0,0],[0,1,0],[1,0,0],[1,0,0],[1,1,0],[1,1,0],[0,1,0],[1,1,1],[1,0,0],[0,0,0],[1,0,1],[1,0,1],[1,1,1],[1,1,0],[1,0,1],[1,1,0],[1,0,1],[1,0,0],[1,0,1],[0,1,1],[1,0,0],[1,1,1],[0,0,1],[1,0,1],[0,0,0],[1,0,1],[0,0,1]];
 
 // Numeric
-//DOT_COLUMNS = [[0,0,0],[0,0,0],[1,1,0],[0,1,0],[1,0,0],[1,0,0],[0,1,0],[0,1,1],[1,0,0],[1,1,0],[1,1,0],[0,0,0],[0,1,0],[1,1,0],[1,0,0],[0,0,0],[0,0,1],[0,0,1]];
+DOT_COLUMNS = [[0,0,0],[0,0,0],[1,1,0],[0,1,0],[1,0,0],[1,0,0],[0,1,0],[0,1,1],[1,0,0],[1,1,0],[1,1,0],[0,0,0],[0,1,0],[1,1,0],[1,0,0],[0,0,0],[0,0,1],[0,0,1]];
 
 // All dots filled, variable size for debugging
 //DOT_COLUMNS =  [for(i=[1:5])([1,1,1])];
@@ -44,11 +44,11 @@ SERVO_ROTOR_OFF_CENTER = 5.4;
 SERVO_ROTOR_TOP_TO_SCREW_PLATE_BOTTOM = 11.9 + 2.4;
 SERVO_HUB_SCREW_HOLE_DIAM = 2.8; // Should be a little on the small side so screw holds the rotor snugly
 SERVO_SPLINE_TEETH = 20;
-SERVO_SPLINE_TOOTH_DEPTH = .3; // TODO check
+SERVO_SPLINE_TOOTH_DEPTH = .2; // TODO check
 SERVO_SPLINE_OUTER_DIAMETER = 4.9;
 SERVO_SPLINE_CLEARANCE = .2; // Adjust this if your print doesn't fit
 SERVO_SPLINE_ATTACHMENT_HEIGHT = 3;
-SERVO_SPLINE_ATTACHMENT_WALL = 1.5; // Not exact, make a bit larger than it needs
+SERVO_SPLINE_ATTACHMENT_WALL = 1.6; // Not exact, make a bit larger than it needs
 
 USE_SERVO_SPLINE = USE_BACKLASH_SPRING; // Recommended if you use the backlash spring; makes centering a little more difficult
 
@@ -103,14 +103,14 @@ cover_wall_above_rotor = COVER_WALL_ABOVE_WINDOW - (rotor_height - COVER_WINDOW_
 
 echo("len(DOT_COLUMNS)", len(DOT_COLUMNS));
 
-module servo_spline_carveout() {
+module servo_spline_carveout(clearance=SERVO_SPLINE_CLEARANCE) {
     // This isn't a partuclarly well modeled socket for the servo spline but it manages
     // to work anyway
     spline_circumference = PI * SERVO_SPLINE_OUTER_DIAMETER;
     tooth_pitch_degrees = 360 / SERVO_SPLINE_TEETH; // This is for the tip + root
     orig_tooth_tip_mm = spline_circumference / SERVO_SPLINE_TEETH / 2;
     
-    carveout_diameter = SERVO_SPLINE_OUTER_DIAMETER - 2 * SERVO_SPLINE_TOOTH_DEPTH + 2 * SERVO_SPLINE_CLEARANCE;
+    carveout_diameter = SERVO_SPLINE_OUTER_DIAMETER - 2 * SERVO_SPLINE_TOOTH_DEPTH + 2 * clearance;
     // Hole sized to fit around the spline if the teeth were missing (i.e. filed off)
     zcyl(
         d=carveout_diameter,
@@ -119,7 +119,7 @@ module servo_spline_carveout() {
     );
     
     // Slots to accommodate the teeth
-    tooth_radius = SERVO_SPLINE_OUTER_DIAMETER/2 + SERVO_SPLINE_CLEARANCE;
+    tooth_radius = SERVO_SPLINE_OUTER_DIAMETER/2 + clearance;
     for (i = [0: SERVO_SPLINE_TEETH - 1]) {
         zrot(i * tooth_pitch_degrees)
         cuboid(
@@ -133,7 +133,6 @@ module servo_spline_carveout() {
     }
     
     // Bottom chamfer to avoid problems with elephants foot
-  
     chamfer_outer_radius = tooth_radius + BOTTOM_CHAMFER_WIDTH;
     zcyl(
         d2=carveout_diameter,
@@ -344,18 +343,21 @@ module cover() {
 
 module cover_bracket() {
     right(SERVO_ROTOR_OFF_CENTER) cover();
-    bracket_length = radius_of_whole_circle + COVER_BRACKET_LEN_PAST_SERVO_CENTER + COVER_ROTOR_GAP;
+    bracket_length = 
+        radius_of_whole_circle  
+        + COVER_ROTOR_GAP
+        + (USE_BACKLASH_SPRING 
+            ? SERVO_RECT_HOLE_DEPTH / 2 + COVER_BRACKET_LEN_PAST_SERVO_SIDES
+            : COVER_BRACKET_LEN_PAST_SERVO_CENTER);
     bracket_width = SERVO_RECT_HOLE_WIDTH +2 * COVER_BRACKET_LEN_PAST_SERVO_SIDES;
     echo("Cover bracket length", bracket_length);
     difference() {
         union() {
             cuboid([bracket_width, bracket_length, COVER_BRACKET_THICKNESS], align=V_UP + V_FWD);
             
+            
             if (USE_BACKLASH_SPRING) {
                    forward(radius_of_whole_circle + COVER_ROTOR_GAP) {
-                        // Extra bracket floor
-                        cuboid([bracket_width, ROTOR_HUB_RADIUS, COVER_BRACKET_THICKNESS], align=V_UP + V_FWD);
-                       
                        // Stick for attaching spring
                        color("blue")
                        right(SERVO_ROTOR_OFF_CENTER) 
