@@ -6,10 +6,10 @@ use <BOSL/shapes.scad>
 // All possible cells
 //DOT_COLUMNS = [[0,0,0],[1,0,0],[0,1,1],[0,0,1],[0,0,0],[1,1,1],[0,0,1],[1,0,1],[0,1,1],[1,1,1],[1,0,1],[1,0,0],[1,1,0],[1,1,1],[1,1,0],[0,0,0],[0,0,1],[1,1,0],[1,0,1],[1,0,1],[0,0,0],[0,1,1],[1,0,1],[1,1,0],[0,1,0],[0,1,0],[1,0,0],[1,0,1],[0,0,1],[1,1,1],[1,0,0],[0,0,0],[1,1,0],[1,1,0],[0,0,1],[1,0,0],[0,1,0],[1,0,1],[0,1,0],[0,0,1],[0,0,1],[0,1,1],[0,1,1],[1,0,0],[0,0,1],[0,1,0],[1,1,0],[0,1,1],[1,1,0],[1,0,0],[1,0,0],[1,1,1],[1,1,1],[0,1,1],[0,1,0],[0,1,1],[0,0,0],[0,0,0],[1,0,1],[1,1,1],[0,0,0],[0,1,0],[1,1,1],[0,1,0],[0,0,0]];
 // Alpha + basic punctuation
-//DOT_COLUMNS = [[0,0,0],[0,0,1],[1,1,1],[0,0,0],[0,0,0],[0,1,1],[0,0,1],[0,0,1],[1,1,1],[0,1,0],[0,1,1],[1,1,0],[0,0,0],[0,1,0],[0,0,0],[1,0,1],[0,1,0],[1,1,0],[1,0,0],[0,1,0],[1,0,0],[1,0,0],[1,1,0],[1,1,0],[0,1,0],[1,1,1],[1,0,0],[0,0,0],[1,0,1],[1,0,1],[1,1,1],[1,1,0],[1,0,1],[1,1,0],[1,0,1],[1,0,0],[1,0,1],[0,1,1],[1,0,0],[1,1,1],[0,0,1],[1,0,1],[0,0,0],[1,0,1],[0,0,1]];
+DOT_COLUMNS = [[0,0,0],[0,0,1],[1,1,1],[0,0,0],[0,0,0],[0,1,1],[0,0,1],[0,0,1],[1,1,1],[0,1,0],[0,1,1],[1,1,0],[0,0,0],[0,1,0],[0,0,0],[1,0,1],[0,1,0],[1,1,0],[1,0,0],[0,1,0],[1,0,0],[1,0,0],[1,1,0],[1,1,0],[0,1,0],[1,1,1],[1,0,0],[0,0,0],[1,0,1],[1,0,1],[1,1,1],[1,1,0],[1,0,1],[1,1,0],[1,0,1],[1,0,0],[1,0,1],[0,1,1],[1,0,0],[1,1,1],[0,0,1],[1,0,1],[0,0,0],[1,0,1],[0,0,1]];
 
 // Numeric
-DOT_COLUMNS = [[0,0,0],[0,0,0],[1,1,0],[0,1,0],[1,0,0],[1,0,0],[0,1,0],[0,1,1],[1,0,0],[1,1,0],[1,1,0],[0,0,0],[0,1,0],[1,1,0],[1,0,0],[0,0,0],[0,0,1],[0,0,1]];
+//DOT_COLUMNS = [[0,0,0],[0,0,0],[1,1,0],[0,1,0],[1,0,0],[1,0,0],[0,1,0],[0,1,1],[1,0,0],[1,1,0],[1,1,0],[0,0,0],[0,1,0],[1,1,0],[1,0,0],[0,0,0],[0,0,1],[0,0,1]];
 
 // All dots filled, variable size for debugging
 //DOT_COLUMNS =  [for(i=[1:5])([1,1,1])];
@@ -31,7 +31,7 @@ V_PADDING = 1.5;
 ROTOR_WALL_THICKNESS = 2;
 
 // Backlash spring stuff
-USE_BACKLASH_SPRING = false; //TODO debug // True is recommended unless your servo has very little play or your rotor radius is small
+USE_BACKLASH_SPRING = true; // True is recommended unless your servo has very little play or your rotor radius is small
 BACKLASH_SPRING_HORN_LENGTH = 15;
 BACKLASH_SPRING_HORN_WIDTH = 6;
 
@@ -44,13 +44,13 @@ SERVO_ROTOR_OFF_CENTER = 5.4;
 SERVO_ROTOR_TOP_TO_SCREW_PLATE_BOTTOM = 11.9 + 2.4;
 SERVO_HUB_SCREW_HOLE_DIAM = 2.8; // Should be a little on the small side so screw holds the rotor snugly
 SERVO_SPLINE_TEETH = 20;
-SERVO_SPLINE_TOOTH_DEPTH = .3; // TODO check
+SERVO_SPLINE_TOOTH_DEPTH = .3;
 SERVO_SPLINE_OUTER_DIAMETER = 4.9;
-SERVO_SPLINE_CLEARANCE = .1; // Adjust this if your print doesn't fit
-SERVO_SPLINE_ATTACHMENT_HEIGHT = 3;
-SERVO_SPLINE_ATTACHMENT_WALL = 2; // Not exact, make a bit larger than it needs
+SERVO_SPLINE_CLEARANCE = .16; // Adjust this if your print doesn't fit
+SERVO_SPLINE_ATTACHMENT_HEIGHT = 4;
+SERVO_SPLINE_ATTACHMENT_WALL = 3; // Not exact, make a bit larger than it needs
 
-USE_SERVO_SPLINE = true; // TODO USE_BACKLASH_SPRING; // Recommended if you use the backlash spring; makes centering a little more difficult
+USE_SERVO_SPLINE = USE_BACKLASH_SPRING; // Recommended if you use the backlash spring; makes centering a little more difficult
 
 // Window/cover stuff
 COVER_RADIUS = 15;
@@ -76,7 +76,7 @@ ROTOR_FLOOR_THICKNESS = 1;
 ROTOR_HUB_RADIUS = 4;
 
 // Calbiration tabs
-USE_CALIBRATION_TABS = false; // TODO ; // This adds a little bit of plastic but makes aligning and calibrating your servo 10 times easier
+USE_CALIBRATION_TABS = true; // This adds a little bit of plastic but makes aligning and calibrating your servo 10 times easier
 CALIBRATION_TAB_ANGLE = 40;
 CALIBRATION_TAB_HEIGHT = 2; // This is height above the window; height above the rotor will be greater
 CALIBRATION_TAB_WIDTH = 2;
@@ -104,7 +104,6 @@ cover_wall_above_rotor = COVER_WALL_ABOVE_WINDOW - (rotor_height - COVER_WINDOW_
 echo("len(DOT_COLUMNS)", len(DOT_COLUMNS));
 
 module servo_spline_carveout(clearance=SERVO_SPLINE_CLEARANCE) {
-    echo("%%% Spline clearance", clearance); // TODO Debug
     // This isn't a partuclarly well modeled socket for the servo spline but it manages
     // to work anyway
     spline_circumference = PI * SERVO_SPLINE_OUTER_DIAMETER;
@@ -152,7 +151,7 @@ module braille_rotor() {
     
     module braille_arc() {
         // This is a shape that can be intersected with the support rotor to make it less than 360 degrees
-        blank_space_angle = BLANK_SPACE_AT_END / perimeter_of_whole_circle * 360; // TODO debug
+        blank_space_angle = BLANK_SPACE_AT_END / perimeter_of_whole_circle * 360;
         arc_degrees = DEGREES_TO_POPULATE + 2*blank_space_angle;
         module arc_mask() {
             zrot(-arc_degrees/2) 
@@ -235,7 +234,7 @@ module braille_rotor() {
             down(SMALL_DELTA) servo_spline_carveout();
         }
        
-       // zcyl(d=SERVO_HUB_SCREW_HOLE_DIAM, h=ARBITRARY); // TODO debug
+        zcyl(d=SERVO_HUB_SCREW_HOLE_DIAM, h=ARBITRARY);
     };
 }
 
@@ -247,7 +246,7 @@ module braille_rotor() {
 // Note: This is unused
 module vertical_plane_braille_cell(six_dots) {
     for (col = [0, 1]) {
-        left(DOT_SPACING / 2) right(col * DOT_SPACING) // TODO
+        left(DOT_SPACING / 2) right(col * DOT_SPACING)
             vertical_plane_3dots(six_dots[col]);
     }
 }
@@ -323,13 +322,13 @@ module cover() {
                                 
                             // Calibration tab
                             color("green")
-                            if(USE_CALIBRATION_TAB) {
+                            if(USE_CALIBRATION_TABS) {
                                 forward(COVER_RADIUS)
                                     cuboid([
                                         CALIBRATION_TAB_WIDTH,
                                         COVER_WALL_THICKNESS,
                                         cover_height/2 + CALIBRATION_TAB_HEIGHT
-                                        ], align=V_UP); // TODO this align
+                                        ], align=V_UP);
                                 
                             }
                         }
