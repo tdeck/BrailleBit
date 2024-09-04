@@ -1,4 +1,4 @@
-#include "ServoBrailleCell.h"
+#include "BrailleBit.h"
 
 // Numeric
 //const float DEGREES_PER_DOT = 9.44;
@@ -18,9 +18,9 @@ const uint16_t US_CENTER = 1475;
 // Note: Here this is calculated at compile time.
 // If you do this calculation dynamically (rather than in a const), you may end
 // up including floating point functions and making your code larger!
-const uint16_t US_PER_4COL = US_PER_4DEG * DEGREES_PER_DOT;
+const uint16_t US_PER_4COL = US_PER_4DEG * NumericRotor::DEGREES_PER_DOT;
 
-ServoBrailleCell cell(CELL_CHARS);
+BrailleBit cell(NumericRotor::CHARS);
 
 // TODO debug stuff
 const int CONTINUE_BUTTON_PIN = 1;

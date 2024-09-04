@@ -1,11 +1,11 @@
-#include "ServoBrailleCell.h"
+#include "BrailleBit.h"
 #include <string.h>
 
 // NOTE: We assume rotorChars is a string constant and not going to go away,
 // which is valid most of the time for microcontroller code, so we don't copy it.
-ServoBrailleCell::ServoBrailleCell(const char* rotor_chars): rotor_chars_(rotor_chars) {}
+BrailleBit::BrailleBit(const char* rotor_chars): rotor_chars_(rotor_chars) {}
 
-void ServoBrailleCell::attach(int pin, uint16_t us_center, uint16_t us_per_4_cols) {
+void BrailleBit::attach(int pin, uint16_t us_center, uint16_t us_per_4_cols) {
 
   int rotor_positions = strlen(rotor_chars_);
   int mid_pos = rotor_positions / 2;
@@ -26,7 +26,7 @@ void ServoBrailleCell::attach(int pin, uint16_t us_center, uint16_t us_per_4_col
   servo.attach(pin);
 }
 
-void ServoBrailleCell::setChar(char c) {
+void BrailleBit::setChar(char c) {
   if (us_per_4_cols_ == 0) return; // Not initialized yet
 
   int16_t us_from_start_times_4 = 0;
