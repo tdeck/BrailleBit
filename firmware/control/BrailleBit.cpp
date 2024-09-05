@@ -1,5 +1,8 @@
+#include "api/Common.h"
 #include "BrailleBit.h"
 #include <string.h>
+
+const int WIGGLE_PAUSE_MS = 50;
 
 // NOTE: We assume rotorChars is a string constant and not going to go away,
 // which is valid most of the time for microcontroller code, so we don't copy it.
@@ -26,6 +29,23 @@ void BrailleBit::attach(int pin, uint16_t us_center, uint16_t us_per_4_cols) {
   servo.attach(pin);
 }
 
+void BrailleBit::displayChar(char c) {
+  if (current_char_ == c) {
+    int currentPos = servo.readMicroseconds();
+
+    if (currentPos >= first_col_us_) { // Don't go out of range
+      servo.writeMicroseconds(currentPos - (us_per_4_cols_ >> 2));
+    } else {
+      servo.writeMicroseconds(currentPos + (us_per_4_cols_ >> 2));
+    }
+
+    delay(WIGGLE_PAUSE_MS);
+    servo.writeMicroseconds(currentPos);
+  } else {
+    setChar(c);
+  }
+}
+
 void BrailleBit::setChar(char c) {
   if (us_per_4_cols_ == 0) return; // Not initialized yet
 
@@ -35,8 +55,10 @@ void BrailleBit::setChar(char c) {
         uint16_t us = first_col_us_ + (us_from_start_times_4 >> 2);
         // TODO some kind of backlash compensation
         servo.writeMicroseconds(us);
+        current_char_ = c;
     }
 
     us_from_start_times_4 -= us_per_4_cols_;
   }
+
 }

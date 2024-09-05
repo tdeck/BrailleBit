@@ -6,10 +6,13 @@ use <BOSL/shapes.scad>
 // All possible cells
 //DOT_COLUMNS = [[0,0,0],[1,0,0],[0,1,1],[0,0,1],[0,0,0],[1,1,1],[0,0,1],[1,0,1],[0,1,1],[1,1,1],[1,0,1],[1,0,0],[1,1,0],[1,1,1],[1,1,0],[0,0,0],[0,0,1],[1,1,0],[1,0,1],[1,0,1],[0,0,0],[0,1,1],[1,0,1],[1,1,0],[0,1,0],[0,1,0],[1,0,0],[1,0,1],[0,0,1],[1,1,1],[1,0,0],[0,0,0],[1,1,0],[1,1,0],[0,0,1],[1,0,0],[0,1,0],[1,0,1],[0,1,0],[0,0,1],[0,0,1],[0,1,1],[0,1,1],[1,0,0],[0,0,1],[0,1,0],[1,1,0],[0,1,1],[1,1,0],[1,0,0],[1,0,0],[1,1,1],[1,1,1],[0,1,1],[0,1,0],[0,1,1],[0,0,0],[0,0,0],[1,0,1],[1,1,1],[0,0,0],[0,1,0],[1,1,1],[0,1,0],[0,0,0]];
 // Alpha + basic punctuation
-DOT_COLUMNS = [[0,0,0],[0,0,1],[1,1,1],[0,0,0],[0,0,0],[0,1,1],[0,0,1],[0,0,1],[1,1,1],[0,1,0],[0,1,1],[1,1,0],[0,0,0],[0,1,0],[0,0,0],[1,0,1],[0,1,0],[1,1,0],[1,0,0],[0,1,0],[1,0,0],[1,0,0],[1,1,0],[1,1,0],[0,1,0],[1,1,1],[1,0,0],[0,0,0],[1,0,1],[1,0,1],[1,1,1],[1,1,0],[1,0,1],[1,1,0],[1,0,1],[1,0,0],[1,0,1],[0,1,1],[1,0,0],[1,1,1],[0,0,1],[1,0,1],[0,0,0],[1,0,1],[0,0,1]];
+//DOT_COLUMNS = [[0,0,0],[0,0,1],[1,1,1],[0,0,0],[0,0,0],[0,1,1],[0,0,1],[0,0,1],[1,1,1],[0,1,0],[0,1,1],[1,1,0],[0,0,0],[0,1,0],[0,0,0],[1,0,1],[0,1,0],[1,1,0],[1,0,0],[0,1,0],[1,0,0],[1,0,0],[1,1,0],[1,1,0],[0,1,0],[1,1,1],[1,0,0],[0,0,0],[1,0,1],[1,0,1],[1,1,1],[1,1,0],[1,0,1],[1,1,0],[1,0,1],[1,0,0],[1,0,1],[0,1,1],[1,0,0],[1,1,1],[0,0,1],[1,0,1],[0,0,0],[1,0,1],[0,0,1]];
 
 // Numeric
 //DOT_COLUMNS = [[0,0,0],[0,0,0],[1,1,0],[0,1,0],[1,0,0],[1,0,0],[0,1,0],[0,1,1],[1,0,0],[1,1,0],[1,1,0],[0,0,0],[0,1,0],[1,1,0],[1,0,0],[0,0,0],[0,0,1],[0,0,1]];
+
+// Numeric with colon
+DOT_COLUMNS = [[0,0,0],[0,0,0],[1,1,0],[0,0,0],[1,0,0],[0,1,0],[0,1,0],[1,1,0],[1,0,0],[1,1,0],[1,1,0],[0,1,0],[1,0,0],[1,0,0],[0,0,0],[0,1,0],[0,1,1],[0,0,1],[0,0,1]];
 
 // All dots filled, variable size for debugging
 //DOT_COLUMNS =  [for(i=[1:5])([1,1,1])];
@@ -31,7 +34,7 @@ V_PADDING = 1.5;
 ROTOR_WALL_THICKNESS = 2;
 
 // Backlash spring stuff
-USE_BACKLASH_SPRING = true; // True is recommended unless your servo has very little play or your rotor radius is small
+USE_BACKLASH_SPRING = false; // True is recommended unless your servo has very little play or your rotor radius is small
 BACKLASH_SPRING_HORN_LENGTH = 15;
 BACKLASH_SPRING_HORN_WIDTH = 6;
 
@@ -50,6 +53,7 @@ SERVO_SPLINE_CLEARANCE = .16; // Adjust this if your print doesn't fit
 SERVO_SPLINE_ATTACHMENT_HEIGHT = 4;
 SERVO_SPLINE_ATTACHMENT_WALL = 3; // Not exact, make a bit larger than it needs
 
+// TODO the spline doesn't fit reliably when printed; explore attaching to servo horns
 USE_SERVO_SPLINE = USE_BACKLASH_SPRING; // Recommended if you use the backlash spring; makes centering a little more difficult
 
 // Window/cover stuff
@@ -83,6 +87,11 @@ CALIBRATION_TAB_WIDTH = 2;
 ROTOR_CALIBRATION_TAB_DEPTH = 2;
 
 BOTTOM_CHAMFER_WIDTH = .2; // Used in some places to avoid elephants foot
+
+// Support bracket
+SUPPORT_BRACKET_EXTRA_HEIGHT = 2;
+SUPPORT_BRACKET_BASE_LENGTH = 50;
+SUPPORT_BRACKET_CHAMFER = 3; // Added in addition to the width of the wall
 
 // Utility constants
 ARBITRARY = 1000; // Arbitrary size for various hole dimensions
@@ -273,21 +282,30 @@ module vertical_plane_braille_dot() {
 // Bracket
 //
 
-module servo_attachment_carveout() {    
+module servo_hole(use_teardrop) {
+    if (use_teardrop) {
+    zrot(180)
+            teardrop(h=ARBITRARY, d=SERVO_MOUNTING_SCREW_HOLE_DIAM, orient=ORIENT_Z);
+    } else {
+        zcyl(h=ARBITRARY, d=SERVO_MOUNTING_SCREW_HOLE_DIAM);
+    }
+}
+
+module servo_attachment_carveout(use_wire_cutout, use_teardrop_holes=false) {    
     cube([SERVO_RECT_HOLE_WIDTH, SERVO_RECT_HOLE_DEPTH, ARBITRARY], center=true);
     
     left(SERVO_RECT_HOLE_WIDTH / 2 + SERVO_HOLE_TO_SCREW_HOLE_CENTER)
-        zcyl(h=ARBITRARY, d=SERVO_MOUNTING_SCREW_HOLE_DIAM);
+        servo_hole(use_teardrop_holes);
 
     // For the backlash spring the bracket fully surrounds the servo, so we need only one screw for alignment.
     // We replace the right screw hole with a notch to allow us to thread the servo wire through when putting
     // the bracket onto the servo.
-    if (USE_BACKLASH_SPRING) {
+    if (use_wire_cutout) {
         right(SERVO_RECT_HOLE_WIDTH / 2 -SMALL_DELTA)
             rightcube([COVER_BRACKET_WIRE_NOTCH_DEPTH, COVER_BRACKET_WIRE_NOTCH_WIDTH, ARBITRARY]);
     } else {
         right(SERVO_RECT_HOLE_WIDTH / 2 + SERVO_HOLE_TO_SCREW_HOLE_CENTER)
-            zcyl(h=ARBITRARY, d=SERVO_MOUNTING_SCREW_HOLE_DIAM);
+            servo_hole(use_teardrop_holes);
     }
 }
 
@@ -372,7 +390,39 @@ module cover_bracket() {
                    }
             }
         }
-        forward(radius_of_whole_circle + COVER_ROTOR_GAP) servo_attachment_carveout();
+        forward(radius_of_whole_circle + COVER_ROTOR_GAP) servo_attachment_carveout(USE_BACKLASH_SPRING);
+    }  
+}
+
+module base_support_bracket() {
+    // TODO it might be better to rotate the teardrops and print this on its thin side
+    bracket_length = 
+        radius_of_whole_circle  
+        + COVER_ROTOR_GAP
+        + COVER_BRACKET_LEN_PAST_SERVO_CENTER
+        + SUPPORT_BRACKET_EXTRA_HEIGHT;
+    bracket_width = SERVO_RECT_HOLE_WIDTH +2 * COVER_BRACKET_LEN_PAST_SERVO_SIDES;
+    difference() {
+        union() {
+            // Servo attachment
+            cuboid([bracket_width, bracket_length, COVER_BRACKET_THICKNESS], align=V_UP + V_FWD);
+            
+            // Pedestal base
+            cuboid(
+                [bracket_width, COVER_BRACKET_THICKNESS, SUPPORT_BRACKET_BASE_LENGTH],
+                align=V_BACK,
+                chamfer=BOTTOM_CHAMFER_WIDTH // This makes it a bit easier to remove the part from the build plate
+            );
+            
+            // Chamfer
+            up(COVER_BRACKET_THICKNESS/2)
+            prismoid(
+                size1=[bracket_width, 2*SUPPORT_BRACKET_CHAMFER + COVER_BRACKET_THICKNESS],
+                size2=[bracket_width, COVER_BRACKET_THICKNESS],
+                h=SUPPORT_BRACKET_CHAMFER,
+                orient=-ORIENT_Y
+            );
+        }
+        forward(radius_of_whole_circle + COVER_ROTOR_GAP + SUPPORT_BRACKET_EXTRA_HEIGHT) servo_attachment_carveout(false, true);
     }
-    
 }

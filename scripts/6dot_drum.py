@@ -28,13 +28,16 @@ BASIC_MODIFIERS = ",#"  # Capital sign, number sign
 NUMERIC = "ABCDEFGHIJ"
 PERIOD = "4"
 MINUS_SIGN = "-"  # This is the nemeth minus sign, UEB expects a dot-5 before it but it's unambiguous here
+COLON = '3'
 SIMPLE_PUNCTUATION = "148" + MINUS_SIGN # Comma, period, question mark
 
 
 # ALL_COMBOS is expressed as 0 or 1 for each dot, dots "123456"
 #ALL_COMBOS = {"{:06b}".format(i) for i in range(64)}
-#ALL_COMBOS = combos_from_braille_ascii(SPACE + ALPHABET + BASIC_MODIFIERS + SIMPLE_PUNCTUATION) # Should get 40
-ALL_COMBOS = combos_from_braille_ascii(NUMERIC + SPACE + PERIOD + MINUS_SIGN)
+ALL_COMBOS = combos_from_braille_ascii(SPACE + ALPHABET + BASIC_MODIFIERS + SIMPLE_PUNCTUATION) # Should get 45
+ALL_COMBOS = combos_from_braille_ascii(SPACE + ALPHABET + BASIC_MODIFIERS) # Should get 40
+ALL_COMBOS = combos_from_braille_ascii(NUMERIC + SPACE + PERIOD + MINUS_SIGN) # Should get 18
+ALL_COMBOS = combos_from_braille_ascii(NUMERIC + SPACE + PERIOD + MINUS_SIGN + COLON) # Should get 18
 
 def try_something_random():
     needed_combos = ALL_COMBOS.copy()

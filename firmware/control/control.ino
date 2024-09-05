@@ -11,8 +11,8 @@ const char* CELL_CHARS = ",#L ;8-#R4TB\"1.OJFEICDGHWPA.XYQ$N$M%ZS?V+K.U`";
 const int SERVO_PIN = 26;
 
 // These come from servo calibration
-const uint16_t US_PER_4DEG = 49;
-const uint16_t US_CENTER = 1475;
+const uint16_t US_PER_4DEG = 48;
+const uint16_t US_CENTER = 1520;
 
 // Derived constants; do not change
 // Note: Here this is calculated at compile time.
@@ -20,7 +20,7 @@ const uint16_t US_CENTER = 1475;
 // up including floating point functions and making your code larger!
 const uint16_t US_PER_4COL = US_PER_4DEG * NumericRotor::DEGREES_PER_DOT;
 
-BrailleBit cell(NumericRotor::CHARS);
+BrailleBit cell(NumericRotor::BRAILLE_ASCII);
 
 // TODO debug stuff
 const int CONTINUE_BUTTON_PIN = 1;
@@ -43,9 +43,9 @@ void loop() {
 
   if (ready_for_press && continue_button_history == 0xFF) {
     ready_for_press = 0;
-    char c = 'A' + random(0, 26);
+    char c = 'A' + random(0, 4); // TODO
     Serial.println(c);
-    cell.setChar(c);
+    cell.displayChar(c);
   }
 
   delay(50);
