@@ -44,9 +44,9 @@ Servo myservo;  // create servo object to control a servo
 
 void setup() {
   myservo.attach(SERVO_PIN);  // attaches the servo on pin 9 to the servo object
-  pinMode(LEFT_BUTTON_PIN, INPUT);
-  pinMode(CONTINUE_BUTTON_PIN, INPUT);
-  pinMode(RIGHT_BUTTON_PIN, INPUT);
+  pinMode(LEFT_BUTTON_PIN, INPUT_PULLDOWN);
+  pinMode(CONTINUE_BUTTON_PIN, INPUT_PULLDOWN);
+  pinMode(RIGHT_BUTTON_PIN, INPUT_PULLDOWN);
 
   #ifdef USE_READOUT_SERIAL
   Serial.begin(9600);
