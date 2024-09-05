@@ -3,7 +3,7 @@
 <img alt="BrailleBit photo; side" src="photos/side.jpg" width=400>
 <img alt="BrailleBit photo; top" src="photos/top.jpg" width=400>
 
-The BrailleBit is an easy way to add a single cell of braille output to your Arduino project. It's cheap and cheerful - using only a hobby servo and 2 or 3 small 3D-printed parts. It's cheap (under $5), displays standard-sized braille, works with almost any microcontroller, and can be assembled and calibrated by touch. The only drawback is that it's too large to fit multiple cells side-by-side. Think of this as an alternative to a 7-segment module, not a replacement for a 2 line LCD.
+The BrailleBit is an easy way to add a single cell of braille output to your Arduino project. It's cheap and cheerful - using only a hobby servo and 2 or 3 small 3D-printed parts. It's cheap (under $5), displays standard-sized braille, works with almost any microcontroller, and can be assembled and calibrated by touch. The main drawback is that it's too large to fit multiple cells side-by-side, and has a limited character set. Think of this as an alternative to a 7-segment module, not a replacement for a 2 line LCD.
 
 The hardware is controlled with a simple Arduino library. For example, here's a sketch that repeatedly counts from 0 to 9 with a BrailleBit attached on pin 1:
 
@@ -37,6 +37,8 @@ void loop() {
 The BrailleBit has a small window through which you can feel two columns of braille dots. Behind this window is the rotor, which is a semicircular plastic piece that has columns of 3 dots in different combinations along its outside wall. A small servo motor allows the BrailleBit to precisely rotate the rotor to expose two adjacent columns of dots at a time. By cleverly arranging the combinations of dots on the rotor's outer wall, we make it possible to display different Braille symbols. The basic BrailleBit is designed for numeric output; it supports letters A-J (for digits 0-9 in braille), the period, minus sign, space, and colon. The result is a device that is about 3.5 cm wide, 6 cm long, and stands 4 cm high on a desk.
 
 The minimalist design of the BrailleBit is a starting point for your own projects and designs. At its simplest, you need the 3D printed rotor and the 3D printed "cover bracket", which provides the fixed window and attaches to a common hobby servo. The base support bracket allows you to place the BrailleBit flat on a desk, with the reading window parallel to the desktop. You can also omit the base bracket and mount the BrailleBit in other ways. For example, you could cut a hole larger than the BrailleBit window in a box, then glue the cover bracket against that hole from the inside.
+
+The provided BrailleBit rotor supports numeric output only. Specifically, it can display the numbers 0 through 9 (as A-J), the minus sign, the period, a colon (for times), and a space. Larger rotors could accommodate more letters, although the process of creating new rotors is not documented yet. A full 26 letter rotor has problems with the mechanical backlash within the servo which I am still working to overcome.
 
 ## Parts needed
 
