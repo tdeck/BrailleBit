@@ -1,6 +1,7 @@
 # BrailleBit - An Arduino braille display
 
-![BrailleBit photo; top](photos/top.jpg | width=400) ![BrailleBit photo; side](photos/side.jpg | width=400)
+<img alt="BrailleBit photo; side" src="photos/side.jpg" width=400>
+<img alt="BrailleBit photo; top" src="photos/top.jpg" width=400>
 
 The BrailleBit is an easy way to add a single cell of braille output to your Arduino project. It's cheap and cheerful - using only a hobby servo and 2 or 3 small 3D-printed parts. It's cheap (under $5), displays standard-sized braille, works with almost any microcontroller, and can be assembled and calibrated by touch. The only drawback is that it's too large to fit multiple cells side-by-side. Think of this as an alternative to a 7-segment module, not a replacement for a 2 line LCD.
 
