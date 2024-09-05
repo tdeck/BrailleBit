@@ -38,7 +38,7 @@ The BrailleBit has a small window through which you can feel two columns of brai
 
 The minimalist design of the BrailleBit is a starting point for your own projects and designs. At its simplest, you need the 3D printed rotor and the 3D printed "cover bracket", which provides the fixed window and attaches to a common hobby servo. The base support bracket allows you to place the BrailleBit flat on a desk, with the reading window parallel to the desktop. You can also omit the base bracket and mount the BrailleBit in other ways. For example, you could cut a hole larger than the BrailleBit window in a box, then glue the cover bracket against that hole from the inside.
 
-The provided BrailleBit rotor supports numeric output only. Specifically, it can display the numbers 0 through 9 (as A-J), the minus sign, the period, a colon (for times), and a space. Larger rotors could accommodate more letters, although the process of creating new rotors is not documented yet. A full 26 letter rotor has problems with the mechanical backlash within the servo which I am still working to overcome.
+The provided BrailleBit rotor supports numeric output only. Larger rotors could accommodate more letters, although the process of creating new rotors is not documented yet. A full 26 letter rotor has problems with the mechanical backlash within the servo which I am still working to overcome.
 
 ## Parts needed
 
